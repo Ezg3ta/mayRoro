@@ -7,8 +7,6 @@
 <title>Insert title here</title>
 </head>
 <body>
-Evo mene!<br />
-Koda: ${authorizationCode}<br />
-Access token: ${accessToken}
+Napaka: ${errorType}
 </body>
 </html>
