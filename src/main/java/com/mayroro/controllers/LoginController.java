@@ -8,7 +8,7 @@ import com.google.api.client.googleapis.auth.oauth2.draft10.GoogleAuthorizationR
 @Controller
 @RequestMapping("/login")
 public class LoginController {
-	private static final String SCOPE = "http://docs.google.com/feeds/ http://spreadsheets.google.com/feeds/";
+	private static final String SCOPE = "https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email http://docs.google.com/feeds/ http://spreadsheets.google.com/feeds/";
 	private static final String CALLBACK_URL = "http://localhost:8080/mayRoro/home";
 
 	// FILL THESE IN WITH YOUR VALUES FROM THE API CONSOLE
@@ -17,7 +17,6 @@ public class LoginController {
 	@RequestMapping("")
 	public String login(){
 		String authorizeUrl = new GoogleAuthorizationRequestUrl(CLIENT_ID, CALLBACK_URL, SCOPE).build()+"&hl=sl";
-		System.out.println(authorizeUrl);
 		return "redirect:"+authorizeUrl;
 	}
 }
