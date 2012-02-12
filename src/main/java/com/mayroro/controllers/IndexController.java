@@ -13,6 +13,7 @@ import com.mayroro.util.Constants;
 @Controller
 @RequestMapping("/")
 public class IndexController {
+	@RequestMapping("")
 	public ModelAndView welcomeHandler(HttpServletRequest req, HttpServletResponse res) {
 		ModelAndView mv = new ModelAndView("index");
 		
