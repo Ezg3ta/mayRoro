@@ -9,13 +9,13 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>mautit</title>
-<link charset="utf-8" rel="stylesheet" href="style/style.css" type="text/css" />
-<link charset="utf-8" rel="stylesheet" href="style/jqplot.css" type="text/css" />
+<link charset="utf-8" rel="stylesheet" href="resources/style/style.css" type="text/css" />
+<link charset="utf-8" rel="stylesheet" href="resources/style/jqplot.css" type="text/css" />
 <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4/jquery.min.js"></script>
-<script type="text/javascript" src="script/custom.js"></script>
+<script type="text/javascript" src="resources/script/custom.js"></script>
 <script type="text/javascript" src="https://www.google.com/jsapi"></script>
-<script type="text/javascript" src="script/jquery.jqplot.min.js"></script>
-<script type="text/javascript" src="script/plugins/allinone.js"></script>
+<script type="text/javascript" src="resources/script/jquery.jqplot.min.js"></script>
+<script type="text/javascript" src="resources/script/plugins/allinone.js"></script>
 
 <script>
 
