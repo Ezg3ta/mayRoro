@@ -13,8 +13,4 @@ public class Constants {
 	
 	public static final HttpTransport TRANSPORT = new NetHttpTransport();
 	public static JsonFactory JSON_FACTORY = new GsonFactory();
-	
-	public Constants(){
-		super();
-	}
 }

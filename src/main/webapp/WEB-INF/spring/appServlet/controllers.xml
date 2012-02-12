@@ -15,6 +15,7 @@
 			<constructor-arg>
 				<list>
 					<value>/mayRoro/index</value>
+					<value>/mayRoro/login</value>
 				</list>
 			</constructor-arg>
 		</bean>

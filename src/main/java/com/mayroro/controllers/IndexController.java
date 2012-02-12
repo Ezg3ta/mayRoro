@@ -11,7 +11,7 @@ import com.google.api.client.googleapis.auth.oauth2.draft10.GoogleAuthorizationR
 import com.mayroro.util.Constants;
 
 @Controller
-@RequestMapping(value={"", "/", "/index"})
+@RequestMapping("/index")
 public class IndexController {
 	@RequestMapping("")
 	public ModelAndView welcomeHandler(HttpServletRequest req, HttpServletResponse res) {

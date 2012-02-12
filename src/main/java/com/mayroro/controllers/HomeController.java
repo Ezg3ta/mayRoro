@@ -7,6 +7,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.mayroro.util.UserInfo;
+
 @Controller
 @RequestMapping("/home")
 public class HomeController {
@@ -14,11 +16,14 @@ public class HomeController {
 	public ModelAndView welcomeHandler(HttpServletRequest req, HttpServletResponse res) {
 		ModelAndView mv = new ModelAndView("home");
 		
-		String accessToken = (String) req.getAttribute("accessToken");
-		String authorizationCode = (String) req.getAttribute("authorizationCode");
+		HttpSession session = req.getSession();
+		UserInfo ui = (UserInfo)session.getAttribute("userInfo");
+		
+		String accessToken = ui.getAccess_token();
 		
 		System.out.println("AT: "+accessToken);
-		System.out.println("AC: "+authorizationCode);
+		
+		mv.addObject("userInfo", ui);
 		
 		return mv;
 	}
