@@ -13,9 +13,6 @@ import com.google.api.client.http.HttpTransport;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson.JacksonFactory;
-import com.google.gdata.client.docs.DocsService;
-import com.google.gdata.data.docs.DocumentListEntry;
-import com.google.gdata.data.docs.DocumentListFeed;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -26,7 +23,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
 @RequestMapping("/test")
-public class UrlShortenerTest {
+public class TestController {
 	private static final String SCOPE = "http://docs.google.com/feeds/ http://spreadsheets.google.com/feeds/ https://www.googleapis.com/auth/urlshortener";
 	private static final String CALLBACK_URL = "http://localhost:8080/mayRoro/home";
 	private static final HttpTransport TRANSPORT = new NetHttpTransport();
@@ -37,7 +34,7 @@ public class UrlShortenerTest {
 	private static final String CLIENT_SECRET = "qGVNHCEhrkt_O1Lqos5Qe2XH";
 
 	@RequestMapping("")
-	public static void here() throws IOException {
+	public static void test() throws IOException {
 		// Generate the URL to which we will direct users
 		String authorizeUrl = new GoogleAuthorizationRequestUrl(CLIENT_ID, CALLBACK_URL, SCOPE).build();
 		

@@ -14,29 +14,29 @@
 	</classpathentry>
 	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.web.container"/>
 	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.module.container"/>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/activation.jar"/>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/gdata-client-1.0.jar"/>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/gdata-client-meta-1.0.jar"/>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/gdata-core-1.0.jar"/>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/gdata-docs-3.0.jar"/>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/gdata-docs-meta-3.0.jar"/>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/gdata-media-1.0.jar"/>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/gdata-spreadsheet-3.0.jar"/>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/gdata-spreadsheet-meta-3.0.jar"/>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/google-api-client-1.6.0-beta.jar"/>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/google-api-client-extensions-1.6.0-beta.jar"/>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/google-api-client-extensions-android2-1.6.0-beta.jar"/>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/google-http-client-1.6.0-beta.jar"/>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/google-http-client-extensions-1.6.0-beta.jar"/>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/google-http-client-extensions-android2-1.6.0-beta.jar"/>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/google-http-client-extensions-android3-1.6.0-beta.jar"/>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/google-oauth-client-1.6.0-beta.jar"/>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/google-oauth-client-extensions-1.6.0-beta.jar"/>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/guava-r09.jar"/>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/mail.jar"/>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/mysql-connector-java-5.1.16-bin.jar"/>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/jsontoken-1.0.jar"/>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/jackson-core-asl-1.9.1.jar"/>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/gson-1.7.1.jar"/>
+	<classpathentry kind="lib" path="src/main/webapp/WEB-INF/lib/activation.jar"/>
+	<classpathentry kind="lib" path="src/main/webapp/WEB-INF/lib/gdata-client-1.0.jar"/>
+	<classpathentry kind="lib" path="src/main/webapp/WEB-INF/lib/gdata-client-meta-1.0.jar"/>
+	<classpathentry kind="lib" path="src/main/webapp/WEB-INF/lib/gdata-core-1.0.jar"/>
+	<classpathentry kind="lib" path="src/main/webapp/WEB-INF/lib/gdata-docs-3.0.jar"/>
+	<classpathentry kind="lib" path="src/main/webapp/WEB-INF/lib/gdata-docs-meta-3.0.jar"/>
+	<classpathentry kind="lib" path="src/main/webapp/WEB-INF/lib/gdata-media-1.0.jar"/>
+	<classpathentry kind="lib" path="src/main/webapp/WEB-INF/lib/gdata-spreadsheet-3.0.jar"/>
+	<classpathentry kind="lib" path="src/main/webapp/WEB-INF/lib/gdata-spreadsheet-meta-3.0.jar"/>
+	<classpathentry kind="lib" path="src/main/webapp/WEB-INF/lib/google-api-client-1.6.0-beta.jar"/>
+	<classpathentry kind="lib" path="src/main/webapp/WEB-INF/lib/google-api-client-extensions-1.6.0-beta.jar"/>
+	<classpathentry kind="lib" path="src/main/webapp/WEB-INF/lib/google-api-client-extensions-android2-1.6.0-beta.jar"/>
+	<classpathentry kind="lib" path="src/main/webapp/WEB-INF/lib/google-http-client-1.6.0-beta.jar"/>
+	<classpathentry kind="lib" path="src/main/webapp/WEB-INF/lib/google-http-client-extensions-1.6.0-beta.jar"/>
+	<classpathentry kind="lib" path="src/main/webapp/WEB-INF/lib/google-http-client-extensions-android2-1.6.0-beta.jar"/>
+	<classpathentry kind="lib" path="src/main/webapp/WEB-INF/lib/google-http-client-extensions-android3-1.6.0-beta.jar"/>
+	<classpathentry kind="lib" path="src/main/webapp/WEB-INF/lib/google-oauth-client-1.6.0-beta.jar"/>
+	<classpathentry kind="lib" path="src/main/webapp/WEB-INF/lib/google-oauth-client-extensions-1.6.0-beta.jar"/>
+	<classpathentry kind="lib" path="src/main/webapp/WEB-INF/lib/gson-1.7.1.jar"/>
+	<classpathentry kind="lib" path="src/main/webapp/WEB-INF/lib/guava-r09.jar"/>
+	<classpathentry kind="lib" path="src/main/webapp/WEB-INF/lib/jackson-core-asl-1.9.1.jar"/>
+	<classpathentry kind="lib" path="src/main/webapp/WEB-INF/lib/jsontoken-1.0.jar"/>
+	<classpathentry kind="lib" path="src/main/webapp/WEB-INF/lib/mail.jar"/>
+	<classpathentry kind="lib" path="src/main/webapp/WEB-INF/lib/mysql-connector-java-5.1.16-bin.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>
