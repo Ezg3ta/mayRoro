@@ -12,7 +12,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.google.api.client.auth.oauth2.draft10.AccessTokenResponse;
 import com.google.api.client.googleapis.auth.oauth2.draft10.GoogleAccessTokenRequest.GoogleAuthorizationCodeGrant;
-import com.mayroro.util.Constants;
+import com.mayroro.util.ConstFunc;
 import com.mayroro.util.UserInfo;
 
 @Controller
@@ -35,8 +35,8 @@ public class LoginController {
 		
 		// Exchange for an access and refresh token
 
-		GoogleAuthorizationCodeGrant authRequest = new GoogleAuthorizationCodeGrant(Constants.TRANSPORT, Constants.JSON_FACTORY, Constants.CLIENT_ID, Constants.CLIENT_SECRET,
-					authorizationCode, Constants.CALLBACK_URL);
+		GoogleAuthorizationCodeGrant authRequest = new GoogleAuthorizationCodeGrant(ConstFunc.TRANSPORT, ConstFunc.JSON_FACTORY, ConstFunc.CLIENT_ID, ConstFunc.CLIENT_SECRET,
+					authorizationCode, ConstFunc.CALLBACK_URL);
 		authRequest.useBasicAuthorization = false;
 		AccessTokenResponse authResponse = null;
 		try{

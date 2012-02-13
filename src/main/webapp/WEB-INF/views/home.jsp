@@ -265,7 +265,7 @@ $(".google-visualization-orgchart-node input").live("focusout", function(){
     <div id="top">
     Pozdravljen ${userInfo.name}!<br /><br />
 <c:forEach var="spreadsheet" items="${spreadsheets}">
-	<c:out value="${spreadsheet.title.plainText}" /><br />
+	<a href="<c:out value="${spreadsheet.selfLink.href}?access_token=${userInfo.access_token}" />"><c:out value="${spreadsheet.title.plainText}" /></a><br />
 </c:forEach>
     </div>
     

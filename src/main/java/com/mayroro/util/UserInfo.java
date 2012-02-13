@@ -113,8 +113,8 @@ public class UserInfo {
 	}
 	
 	public static UserInfo build(String accessToken, String refreshToken) throws IOException {
-		GoogleAccessProtectedResource access = new GoogleAccessProtectedResource(accessToken, Constants.TRANSPORT, Constants.JSON_FACTORY, Constants.CLIENT_ID, Constants.CLIENT_SECRET, refreshToken);
-		HttpRequestFactory rf = Constants.TRANSPORT.createRequestFactory(access);
+		GoogleAccessProtectedResource access = new GoogleAccessProtectedResource(accessToken, ConstFunc.TRANSPORT, ConstFunc.JSON_FACTORY, ConstFunc.CLIENT_ID, ConstFunc.CLIENT_SECRET, refreshToken);
+		HttpRequestFactory rf = ConstFunc.TRANSPORT.createRequestFactory(access);
 		
 		GenericUrl userInfoUrl = new GenericUrl("https://www.googleapis.com/oauth2/v1/userinfo?access_token="+accessToken);
 		
