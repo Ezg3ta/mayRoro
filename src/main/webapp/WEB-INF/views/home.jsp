@@ -263,10 +263,6 @@ $(".google-visualization-orgchart-node input").live("focusout", function(){
 <body>
 	
     <div id="top">
-    Pozdravljen ${userInfo.name}!<br /><br />
-<c:forEach var="spreadsheet" items="${spreadsheets}">
-	<a href="<c:out value="${spreadsheet.selfLink.href}?access_token=${userInfo.access_token}" />"><c:out value="${spreadsheet.title.plainText}" /></a><br />
-</c:forEach>
     </div>
     
     <div class="mainNav" id="leftNav">
@@ -358,9 +354,74 @@ google.setOnLoadCallback(drawVisualization);
         <div class="main">
         	<h1>Alternative</h1>
             
+            
+            <div id="table_div"></div>
+            
+            
+      <script type='text/javascript'>
+      google.load('visualization', '1', {packages:['table']});
+      google.setOnLoadCallback(drawTable);
+	  
+      function drawTable() {
+        var data = new google.visualization.DataTable();
+        data.addColumn('string', 'Name');
+        data.addColumn('number', 'Salary');
+        data.addColumn('boolean', 'Full Time Employee');
+        data.addRows(4);
+        data.setCell(0, 0, 'Mike');
+        data.setCell(0, 1, 10000, '$10,000');
+        data.setCell(0, 2, true);
+        data.setCell(1, 0, 'Jim');
+        data.setCell(1, 1, 8000, '$8,000');
+        data.setCell(1, 2, false);
+        data.setCell(2, 0, 'Alice');
+        data.setCell(2, 1, 12500, '$12,500');
+        data.setCell(2, 2, true);
+        data.setCell(3, 0, 'Bob');
+        data.setCell(3, 1, 7000, '$7,000');
+        data.setCell(3, 2, true);
+
+        var table = new google.visualization.Table(document.getElementById('table_div'));
+        table.draw(data, {showRowNumber: true});
+      }
+    </script>
+            
+            
+            
+            
         </div>
         <div class="main">
        		<h1>Rezultat</h1>
+            
+            <div id="result_chart_div"></div>
+            
+             <script type="text/javascript">
+      google.load("visualization", "1", {packages:["corechart"]});
+      google.setOnLoadCallback(drawChart);
+      function drawChart() {
+        var data = new google.visualization.DataTable();
+        data.addColumn('string', 'Year');
+        data.addColumn('number', 'Sales');
+        data.addColumn('number', 'Expenses');
+        data.addRows([
+          ['2004', 1000, 400],
+          ['2005', 1170, 460],
+          ['2006', 660, 1120],
+          ['2007', 1030, 540]
+        ]);
+
+        var options = {
+          width: 600, height: 400,
+          title: 'Company Performance',
+          hAxis: {title: 'Year', titleTextStyle: {color: 'red'}}
+        };
+
+        var chart = new google.visualization.ColumnChart(document.getElementById('result_chart_div'));
+        chart.draw(data, options);
+      }
+    </script>
+    
+            
         </div>
     </div>
     </div>
