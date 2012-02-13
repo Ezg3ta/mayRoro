@@ -16,9 +16,12 @@ import com.google.api.client.auth.oauth2.draft10.AccessTokenResponse;
 import com.google.api.client.googleapis.auth.oauth2.draft10.GoogleAuthorizationRequestUrl;
 import com.google.api.client.googleapis.auth.oauth2.draft10.GoogleAccessTokenRequest.GoogleAuthorizationCodeGrant;
 import com.google.gdata.client.docs.DocsService;
+import com.google.gdata.data.Feed;
+import com.google.gdata.data.PlainTextConstruct;
+import com.google.gdata.data.docs.FolderEntry;
 import com.google.gdata.data.spreadsheet.SpreadsheetEntry;
 import com.google.gdata.data.spreadsheet.SpreadsheetFeed;
-import com.google.gdata.util.ServiceException;
+import com.google.gdata.data.Entry;
 import com.mayroro.util.ConstFunc;
 import com.mayroro.util.UserInfo;
 
@@ -83,7 +86,7 @@ public class GUIController {
 	}
 	
 	@RequestMapping("/home")
-	public ModelAndView welcomeHandler(HttpServletRequest req, HttpServletResponse res) throws IOException, ServiceException {
+	public ModelAndView welcomeHandler(HttpServletRequest req, HttpServletResponse res) {
 		ModelAndView mv = new ModelAndView("home");
 		
 		HttpSession session = req.getSession();
@@ -96,17 +99,17 @@ public class GUIController {
 		System.out.println("RT: "+refreshToken);
 		
 		mv.addObject("userInfo", ui);
-		System.out.println(ui);
 		
 		DocsService service = new DocsService("mayRoro");
 		service.setHeader("Authorization", "OAuth "+accessToken);
 		
 		try {
-			URL metafeedUrl = new URL("https://spreadsheets.google.com/feeds/spreadsheets/private/full");
+			URL metafeedUrl = new URL("https://spreadsheets.google.com/feeds/spreadsheets/private/full?title="+ConstFunc.SPREADSHEET_PREFIX);
 			SpreadsheetFeed feed = service.getFeed(metafeedUrl, SpreadsheetFeed.class);
 			List<SpreadsheetEntry> spreadsheets = feed.getEntries();
 			for (int i = 0; i < spreadsheets.size(); i++) {
 				SpreadsheetEntry entry = spreadsheets.get(i);
+				entry.setTitle(new PlainTextConstruct(entry.getTitle().getPlainText().substring(9)));
 				System.out.println("\t" + entry.getTitle().getPlainText());
 				System.out.println(entry.getKey());
 			}
@@ -115,11 +118,19 @@ public class GUIController {
 			e.printStackTrace();
 		}
 		
-		String newSpreadsheet = null;
-		newSpreadsheet = req.getParameter("new_spreadsheet");
-		if("true".equals(newSpreadsheet)){
-			ConstFunc.createNewSpreadsheet(service, "*mayRoro-Ustvarjen projekt");
-		}
+//		************* Seznam vseh map *************
+//		try {
+//			URL metafeedUrl = new URL("https://docs.google.com/feeds/default/private/full/-/folder");
+//			Feed feed = service.getFeed(metafeedUrl, Feed.class);
+//			List<Entry> spreadsheets = feed.getEntries();
+//			for (int i = 0; i < spreadsheets.size(); i++) {
+//				Entry entry = spreadsheets.get(i);
+//				System.out.println("\t" + entry.getTitle().getPlainText());
+//			}
+//			mv.addObject("spreadsheets", spreadsheets);
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
 		
 		return mv;
 	}

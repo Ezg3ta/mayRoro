@@ -1,5 +1,9 @@
 package com.mayroro.controllers;
 
+import java.io.IOException;
+import java.net.URL;
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -9,6 +13,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.google.gdata.client.docs.DocsService;
+import com.google.gdata.data.PlainTextConstruct;
+import com.google.gdata.data.docs.FolderEntry;
+import com.google.gdata.data.docs.SpreadsheetEntry;
+import com.google.gdata.data.spreadsheet.WorksheetEntry;
+import com.google.gdata.util.ServiceException;
 import com.mayroro.util.ConstFunc;
 import com.mayroro.util.UserInfo;
 
@@ -31,11 +40,63 @@ public class UtilController {
 			return new ModelAndView("forward:/error?type=parameter_missing");
 		
 		try {
-			ConstFunc.createNewSpreadsheet(service, "*mayRoro-"+title);
+			SpreadsheetEntry spreadsheet = createNewSpreadsheet(service, ConstFunc.SPREADSHEET_PREFIX+title);
 		} catch (Exception e) {
 			return new ModelAndView("forward:/error?type=new_spreadsheet_error");
 		}
 		
 		return mv;
 	}
+	
+	private SpreadsheetEntry createNewSpreadsheet(DocsService service, String title) throws IOException, ServiceException {
+		SpreadsheetEntry newEntry = new SpreadsheetEntry();
+		newEntry.setTitle(new PlainTextConstruct(title));
+		
+		// Prevent collaborators from sharing the document with others?
+		// newEntry.setWritersCanInvite(false);
+
+		// You can also hide the document on creation
+		// newEntry.setHidden(true);
+		
+		SpreadsheetEntry spreadsheet = service.insert(new URL("https://docs.google.com/feeds/default/private/full/"), newEntry);
+		URL worksheetFeedUrl = spreadsheet.getWorksheetFeedUrl();
+		
+		// Worksheet - atributi
+		WorksheetEntry worksheet = spreadsheet.getWorksheets().get(0);
+		worksheet.setTitle(new PlainTextConstruct("atributi"));
+		worksheet.update();
+		
+		// Worksheet - drevo
+		createNewWorksheet(service, worksheetFeedUrl, "drevo", 100, 20);
+		
+		// Worksheet - funkcije
+		createNewWorksheet(service, worksheetFeedUrl, "funkcije", 100, 20);
+
+		// Worksheet - uteži
+		createNewWorksheet(service, worksheetFeedUrl, "uteži", 100, 20);
+
+		// Worksheet - alternative
+		createNewWorksheet(service, worksheetFeedUrl, "alternative", 100, 20);
+
+		// Worksheet - maut
+		createNewWorksheet(service, worksheetFeedUrl, "maut", 100, 20);
+		
+		return spreadsheet;
+	}
+	
+	private WorksheetEntry createNewWorksheet(DocsService service, URL worksheetFeedUrl, String title, int rowCount, int colCount) throws IOException, ServiceException{
+		WorksheetEntry worksheet = new WorksheetEntry();
+		worksheet.setTitle(new PlainTextConstruct(title));
+		worksheet.setRowCount(rowCount);
+		worksheet.setColCount(colCount);
+		service.insert(worksheetFeedUrl, worksheet);
+		return worksheet;
+	}
+	
+//	private void createFolder(DocsService client, String title) throws IOException, ServiceException {
+//		FolderEntry newEntry = new FolderEntry();
+//		newEntry.setTitle(new PlainTextConstruct(title));
+//		URL feedUrl = new URL("https://docs.google.com/feeds/default/private/full/");
+//		client.insert(feedUrl, newEntry);
+//	}
 }
