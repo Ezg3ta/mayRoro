@@ -2,7 +2,6 @@ package com.mayroro.controllers;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -14,7 +13,6 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.google.gdata.client.docs.DocsService;
 import com.google.gdata.data.PlainTextConstruct;
-import com.google.gdata.data.docs.FolderEntry;
 import com.google.gdata.data.docs.SpreadsheetEntry;
 import com.google.gdata.data.spreadsheet.WorksheetEntry;
 import com.google.gdata.util.ServiceException;
@@ -42,6 +40,7 @@ public class UtilController {
 		try {
 			SpreadsheetEntry spreadsheet = createNewSpreadsheet(service, ConstFunc.SPREADSHEET_PREFIX+title);
 		} catch (Exception e) {
+			e.printStackTrace();
 			return new ModelAndView("forward:/error?type=new_spreadsheet_error");
 		}
 		
@@ -61,25 +60,26 @@ public class UtilController {
 		SpreadsheetEntry spreadsheet = service.insert(new URL("https://docs.google.com/feeds/default/private/full/"), newEntry);
 		URL worksheetFeedUrl = spreadsheet.getWorksheetFeedUrl();
 		
+
 		// Worksheet - atributi
+		createNewWorksheet(service, worksheetFeedUrl, "atributi", 100, 2);
 		WorksheetEntry worksheet = spreadsheet.getWorksheets().get(0);
-		worksheet.setTitle(new PlainTextConstruct("atributi"));
-		worksheet.update();
+		worksheet.delete();
 		
 		// Worksheet - drevo
-		createNewWorksheet(service, worksheetFeedUrl, "drevo", 100, 20);
+		createNewWorksheet(service, worksheetFeedUrl, "drevo", 100, 2);
 		
 		// Worksheet - funkcije
-		createNewWorksheet(service, worksheetFeedUrl, "funkcije", 100, 20);
+		createNewWorksheet(service, worksheetFeedUrl, "funkcije", 50, 60);
 
 		// Worksheet - uteži
-		createNewWorksheet(service, worksheetFeedUrl, "uteži", 100, 20);
+		createNewWorksheet(service, worksheetFeedUrl, "uteži", 50, 30);
 
 		// Worksheet - alternative
-		createNewWorksheet(service, worksheetFeedUrl, "alternative", 100, 20);
+		createNewWorksheet(service, worksheetFeedUrl, "alternative", 50, 2);
 
 		// Worksheet - maut
-		createNewWorksheet(service, worksheetFeedUrl, "maut", 100, 20);
+		createNewWorksheet(service, worksheetFeedUrl, "maut", 101, 51);
 		
 		return spreadsheet;
 	}
