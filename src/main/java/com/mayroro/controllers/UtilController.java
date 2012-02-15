@@ -66,14 +66,11 @@ public class UtilController {
 		worksheet.delete();
 		
 		// Worksheet - drevo
-		createNewWorksheet(service, worksheetFeedUrl, "drevo", 100, 2);
+		createNewWorksheet(service, worksheetFeedUrl, "drevo", 100, 3);
 		
 		// Worksheet - funkcije
 		createNewWorksheet(service, worksheetFeedUrl, "funkcije", 50, 60);
-
-		// Worksheet - uteži
-		createNewWorksheet(service, worksheetFeedUrl, "uteži", 50, 30);
-
+		
 		// Worksheet - alternative
 		createNewWorksheet(service, worksheetFeedUrl, "alternative", 50, 2);
 

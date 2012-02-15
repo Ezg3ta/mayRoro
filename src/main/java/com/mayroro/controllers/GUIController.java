@@ -84,6 +84,13 @@ public class GUIController {
 		return mv;
 	}
 	
+	@RequestMapping("logout")
+	public String logout(HttpServletRequest req){
+		HttpSession session = req.getSession();
+		session.invalidate();
+		return ("redirect:/index");
+	}
+	
 	@RequestMapping("home")
 	public ModelAndView welcomeHandler(HttpServletRequest req, HttpServletResponse res) {
 		ModelAndView mv = new ModelAndView("home");
@@ -103,6 +110,7 @@ public class GUIController {
 			for (int i = 0; i < spreadsheets.size(); i++) {
 				SpreadsheetEntry entry = spreadsheets.get(i);
 				entry.setTitle(new PlainTextConstruct(entry.getTitle().getPlainText().substring(9)));
+				System.out.println("Self: "+entry.getSelfLink().getHref());
 			}
 			mv.addObject("spreadsheets", spreadsheets);
 		} catch (Exception e) {
@@ -127,10 +135,23 @@ public class GUIController {
 	}
 	
 	@RequestMapping("maut/{spreadsheetID}")
-	public ModelAndView maut(HttpServletRequest req, HttpServletResponse res, @PathVariable int spreadsheetID){
+	public ModelAndView maut(HttpServletRequest req, HttpServletResponse res, @PathVariable String spreadsheetID){
 		ModelAndView mv = new ModelAndView("maut");
 		
+		HttpSession session = req.getSession();
+		String accessToken = ((UserInfo)session.getAttribute("userInfo")).getAccess_token();
 		
+		DocsService service = new DocsService("mayRoro");
+		service.setHeader("Authorization", "OAuth "+accessToken);
+		
+		try {
+			URL spreadsheetUrl = new URL("https://spreadsheets.google.com/feeds/spreadsheets/private/full/"+spreadsheetID);
+			SpreadsheetEntry spreadsheet = service.getEntry(spreadsheetUrl, SpreadsheetEntry.class);
+			spreadsheet.setTitle(new PlainTextConstruct(spreadsheet.getTitle().getPlainText().substring(9)));
+			mv.addObject("spreadsheet", spreadsheet);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		
 		return mv;
 	}

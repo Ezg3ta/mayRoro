@@ -1,5 +1,7 @@
 package com.mayroro.interceptors;
 
+import java.text.DecimalFormat;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -25,9 +27,10 @@ public class DefaultInterceptor extends HandlerInterceptorAdapter {
 		
 		boolean intercept = true;
 		
-		// preverjanje nevkljuèenih URI-jev
+		// Ali gre za request resourcev
 		if (reqURI.contains(resourceURI.subSequence(0, resourceURI.length())))
 			return true;
+		// Ali gre za stran, kjer ne rabiš biti loginan
 		else {
 			for (String URI : excludedURIs){
 				if (reqURI.equals(URI)){

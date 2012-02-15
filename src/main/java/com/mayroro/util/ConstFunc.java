@@ -1,8 +1,5 @@
 package com.mayroro.util;
 
-import java.io.IOException;
-import java.net.URL;
-
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.JsonFactory;
