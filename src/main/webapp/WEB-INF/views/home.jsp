@@ -30,6 +30,16 @@ $(document).ready(function() {
 function _getVal(str){
 	return str.substring(0, str.indexOf("p"));
 }
+
+function _create2DArray(rows) {
+  var arr = [];
+
+  for (var i=0;i<rows;i++) {
+     arr[i] = [];
+  }
+
+  return arr;
+}
 </script>
 
 
@@ -46,6 +56,7 @@ var previousNode;
 
 var nodesIds = new Array();
 var nodesData = new Array();
+var alternatives = new Array();
 var currentNodeIndex;
 var currentItem;
 
@@ -53,6 +64,8 @@ var plot;
 
 var defaultCoords = [[1,0.5],[2,0.5],[3,0.5],[4, 0.5],[5, 0.5],[6, 0.5],[7, 0.5],[8, 0.5],[9, 0.5],[10, 0.5],[11, 0.5],[12, 0.5],[13, 0.5],[14, 0.5],[15, 0.5],[16, 0.5],[17, 0.5],[18, 0.5],[19, 0.5],[20, 0.5]];
 
+var tableData = new google.visualization.DataTable();
+var initedTable = false;
 //toolbar
 
 $(window).resize(function() {
@@ -194,6 +207,18 @@ $(".mainNav").live("click", function(){
 });
 
 
+
+function _getNodeIndex(){
+	id = currentNodeObject.children("input").attr("nodeid");
+	for(i = 0; i < nodesData.length; i++){
+		if(id == nodesData[i].nodeId){
+			break;
+		}
+	}
+	return i;
+	
+}
+
 function _getCurrentNodeIndex(){
 	id = currentNodeObject.children("input").attr("nodeid");
 	for(i = 0; i < nodesData.length; i++){
@@ -237,23 +262,87 @@ $(".functionModelNode").live("click", function(){
 	showPopup(nodesData[i].name, nodesData[i].pointCoords, nodesData[i].min, nodesData[i].max);
 });
 
+
+
+/*  					*/
+var nodeVal;
+
 $(".google-visualization-orgchart-node input").live("focusin", function(){
-	//alert(currentNodeIndex);
+	nodeVal = $(this).attr("value");
 });
 
 $(".google-visualization-orgchart-node input").live("focusout", function(){
 	_val = $(this).attr("value");
+	
+	n = _getNodeIndex();
 	//alert(currentNodeIndex);
 	//alert(nodesData[currentNodeIndex].name);
-	nodesData[currentNodeIndex].name = _val;	
+	nodesData[n].name = _val;	
 	
-	_rowIndex = nodeItem.row;
-	
-	data.setValue(_rowIndex, 0, _val);
+	for(i = 0; i < data.getNumberOfRows(); i++){
+		
+		for(j = 0; j < data.getNumberOfColumns() - 1; j++){
+			_s = data.getValue(i,j);
+			
+			if(_s.indexOf(nodeVal) >= 0){
+				_d = _s.replace(nodeVal, _val);
+				data.setCell(i,j,_d);
+			}
+		}
+		
+	}
 	mautModel.draw(data, {allowHtml:true});
 	mautModel.setSelection();
 	
 });
+
+$(".greenGrad").live("click", function(){
+	fillTable();
+});
+
+$(".addAlternative").live("click", function(){
+	val = $("#alternativeName").attr("value");
+	if(val.length >= 2){
+		$("#alternativeName").attr("value","");
+		tableData.addColumn("string", val );
+		drawTable();
+	}
+});
+
+$(".tblInput").live("focusout", function(){
+	
+	row = parseInt($(this).attr("row"));
+	col = parseInt($(this).attr("col"));
+	val = $(this).attr("value");
+	
+	tableData.setCell(row, col, val);
+	drawTable();
+});
+
+
+$(".logout").live("click", function(){
+	$.get("http://127.0.0.1/mayRoro/logout");
+	$.get("https://accounts.google.com/Logout");
+	return false;
+	
+});
+
+
+$(".save").live("click", function(){
+	$.post(
+		"http://127.0.0.1/mayRoro/util/save", 
+		{drevo: data, funkcije: null, maut: tableData},
+		function(data) {
+		   process(data);
+		}
+	);
+	
+});
+
+util/save
+
+
+
 
 </script>
     
@@ -263,6 +352,29 @@ $(".google-visualization-orgchart-node input").live("focusout", function(){
 <body>
 	
     <div id="top">
+    <div class="content">
+    
+    	<div class="logo">mayRoro</div>
+        <div class="logout">logout</div>
+        <div class="user">${userInfo.name}</div>
+       
+        <div class="menu">
+        
+        	<div class="btnM">Projekti</div>
+        	<div style="display: none;">
+        	
+        		<c:forEach var="spreadsheet" items="${spreadsheets}">
+				 	<a href="<c:out value="maut/${spreadsheet.key}" />"><c:out value="${spreadsheet.title.plainText}" /></a><br />
+				</c:forEach>
+				        	
+        	</div>
+            <div class="btnM">Pomoč</div>
+            <div class="btnM">Kontakt</div>
+            
+        </div>
+        
+        
+    </div>
     </div>
     
     <div class="mainNav" id="leftNav">
@@ -294,8 +406,8 @@ function drawVisualization() {
   // To see the data that this visualization uses, browse to
   // http://spreadsheets.google.com/ccc?key=pCQbetd-CptGXxxQIG7VFIQ  
   var query = new google.visualization.Query(
-	  'https://docs.google.com/spreadsheet/ccc?key=0AhhkkHUzjYDbdHFQdHRpMFBnektVb2ZNSVdKcDNvMVE&hl=en_US#gid=0');
-  
+	  //'https://docs.google.com/spreadsheet/ccc?key=0AhhkkHUzjYDbdHFQdHRpMFBnektVb2ZNSVdKcDNvMVE&hl=en_US#gid=0');
+  		'https://docs.google.com/spreadsheet/ccc?key=0AsDL-_qKVv8rdDliRVhLbkJmVjRfSndmZy1aWDlHS0E&sheet=drevo');
   // Send the query with a callback function.
   query.send(handleQueryResponse);
 }
@@ -356,37 +468,177 @@ google.setOnLoadCallback(drawVisualization);
             
             
             <div id="table_div"></div>
-            
-            
+           
+           
       <script type='text/javascript'>
-      google.load('visualization', '1', {packages:['table']});
-      google.setOnLoadCallback(drawTable);
+
 	  
-      function drawTable() {
-        var data = new google.visualization.DataTable();
-        data.addColumn('string', 'Name');
-        data.addColumn('number', 'Salary');
-        data.addColumn('boolean', 'Full Time Employee');
-        data.addRows(4);
-        data.setCell(0, 0, 'Mike');
-        data.setCell(0, 1, 10000, '$10,000');
-        data.setCell(0, 2, true);
-        data.setCell(1, 0, 'Jim');
-        data.setCell(1, 1, 8000, '$8,000');
-        data.setCell(1, 2, false);
-        data.setCell(2, 0, 'Alice');
-        data.setCell(2, 1, 12500, '$12,500');
-        data.setCell(2, 2, true);
-        data.setCell(3, 0, 'Bob');
-        data.setCell(3, 1, 7000, '$7,000');
-        data.setCell(3, 2, true);
+	  
+	  function _getLeafs(tblData, objData){
+		
+		var node;
+		var leafs = new Array();
+		var cnt = 0;
+		//alert(tblData.getValue(0,0));
+		var isLeaf = true;
+		
+		for(i = 0; i < objData.length; i++){
+			node = "\"" + objData[i].name + "\"";
+			
+			isLeaf = true;
+			for(j = 0; j < tblData.getNumberOfRows(); j++){
+				if(tblData.getValue(j, 1).indexOf(node) > 0){
+					isLeaf = false;
+					break;
+				}
+			}
+			
+			if(isLeaf == true){
+				leafs[cnt] = node.replace(/"/gi, "");
+				cnt++;
+			}
+		}
+		
+		return leafs;
+	  }
+	  
+	  function _getParents(tblData, objData){
+		
+		var node;
+		var parents = new Array();
+		var cnt = 0;
+		//alert(tblData.getValue(0,0));
+		var isLeaf = true;
+		
+		for(i = 0; i < objData.length; i++){
+			node = "\"" + objData[i].name + "\"";
+			
+			isLeaf = true;
+			for(j = 0; j < tblData.getNumberOfRows(); j++){
+				if(tblData.getValue(j, 1).indexOf(node) > 0){
+					isLeaf = false;
+					break;
+				}
+			}
+			
+			if(isLeaf == false){
+				parents[cnt] = node.replace(/"/gi, "");
+				cnt++;
+			}
+		}
+		
+		return parents;
+	  }
+	  
+	  
+	  function _getLeafsData(tblData, parents){
+		
+		var node;
+		var leafsDat = tblData;
+		//alert(tblData.getValue(0,0));
+		var isLeaf = true;
+		var cnt = 0;
+		
+		for(i = 0; i < parents.length; i++){
+			node = parents[i];
+			
+			isLeaf = true;
+			for(j = 0; j < tblData.getNumberOfRows(); j++){
+				if(tblData.getValue(j, 0) == node){
+					isLeaf = false;
+					break;
+				}
+			}
+			
+			if(isLeaf == false){
+				leafsDat.removeRow(j);
+			}
+		}
+		
+		return leafsDat;
+	  }
+	  
+	  
+	  
+	  
+	  function _makeInputable(data, row, col){
+		  
+		  var value;
+		  
+		  inputable = data.clone();
+
+		  for(i = row; i < data.getNumberOfRows(); i++){
+			  
+				for(j = col; j < data.getNumberOfColumns(); j++){
+					
+					val = data.getValue(i,j);
+					if (val == null){
+						val = "";
+					}
+					value = '<input class="tblInput" type="text" row="'+i+'" col="'+j+'" value="' + val + '"/>' ;
+				  	inputable.setCell(i,j, value);
+				}
+		  }
+		  
+		  return inputable;
+	  }
+	  
+	  
+	  
+      google.load('visualization', '1', {packages:['table']});
+	  
+	  
+	  function fillTable(){
+		  
+		  if(initedTable == false){
+			  var query = new google.visualization.Query(
+				'https://docs.google.com/spreadsheet/ccc?key=0AsDL-_qKVv8rdDliRVhLbkJmVjRfSndmZy1aWDlHS0E&sheet=maut&headers=1');
+			  // Send the query with a callback function.
+			  query.send(drawTableInit);
+			  initedTable = true;
+		  }
+		  else{
+			  drawTable();
+		  }
+		  
+	  }
+      
+      function drawTableInit(response) {
+	
+	
+		if (response.isError()) {
+			alert('Error in query: ' + response.getMessage() + ' ' + response.getDetailedMessage());
+			return;
+		}
+		
+		tableData = response.getDataTable();
+		
+		leafs = _getLeafs(data, nodesData);
+		parents = _getParents(data, nodesData);
+		leafsData =  _getLeafsData(tableData, parents);
+		
+		leafsDataInputable = _makeInputable(leafsData, 0, 1);
 
         var table = new google.visualization.Table(document.getElementById('table_div'));
-        table.draw(data, {showRowNumber: true});
+        table.draw(leafsDataInputable, {sort: 'disable', showRowNumber: false, scrollLeftStartPosition: 400, allowHtml: true});
       }
+	  
+	  function drawTable() {
+		
+		leafs = _getLeafs(data, nodesData);
+		parents = _getParents(data, nodesData);
+		leafsData =  _getLeafsData(tableData, parents);
+		
+		leafsDataInputable = _makeInputable(leafsData, 0, 1);
+
+        var table = new google.visualization.Table(document.getElementById('table_div'));
+        table.draw(leafsDataInputable, {sort: 'disable', showRowNumber: false, scrollLeftStartPosition: 400, allowHtml: true});
+      }
+	  
+	  //google.setOnLoadCallback(drawTable);
     </script>
             
-            
+        <input id="alternativeName" type="text"  /><div class="btn addAlternative">dodaj alternativo</div>    
             
             
         </div>

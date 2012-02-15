@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -16,16 +17,16 @@ import com.google.api.client.auth.oauth2.draft10.AccessTokenResponse;
 import com.google.api.client.googleapis.auth.oauth2.draft10.GoogleAuthorizationRequestUrl;
 import com.google.api.client.googleapis.auth.oauth2.draft10.GoogleAccessTokenRequest.GoogleAuthorizationCodeGrant;
 import com.google.gdata.client.docs.DocsService;
+import com.google.gdata.data.PlainTextConstruct;
 import com.google.gdata.data.spreadsheet.SpreadsheetEntry;
 import com.google.gdata.data.spreadsheet.SpreadsheetFeed;
-import com.google.gdata.util.ServiceException;
 import com.mayroro.util.ConstFunc;
 import com.mayroro.util.UserInfo;
 
 @Controller
 @RequestMapping("")
 public class GUIController {
-	@RequestMapping(value={"/", "/index"})
+	@RequestMapping(value={"", "index"})
 	public ModelAndView indexController(HttpServletRequest req, HttpServletResponse res) {
 		ModelAndView mv = new ModelAndView("index");
 		
@@ -35,7 +36,7 @@ public class GUIController {
 		return mv;
 	}
 	
-	@RequestMapping("/login")
+	@RequestMapping("login")
 	public ModelAndView login(HttpServletRequest req, HttpServletResponse res){
 		ModelAndView mv = new ModelAndView("redirect:/home");
 		
@@ -66,6 +67,7 @@ public class GUIController {
 		String accessToken = authResponse.accessToken;
 		
 		System.out.println("accessToken: "+accessToken);
+		System.out.println("refreshToken: "+authResponse.refreshToken);
 		
 		// Get user data
 		
@@ -82,43 +84,76 @@ public class GUIController {
 		return mv;
 	}
 	
-	@RequestMapping("/home")
-	public ModelAndView welcomeHandler(HttpServletRequest req, HttpServletResponse res) throws IOException, ServiceException {
+	@RequestMapping("logout")
+	public String logout(HttpServletRequest req){
+		HttpSession session = req.getSession();
+		session.invalidate();
+		return ("redirect:/index");
+	}
+	
+	@RequestMapping("home")
+	public ModelAndView welcomeHandler(HttpServletRequest req, HttpServletResponse res) {
 		ModelAndView mv = new ModelAndView("home");
 		
 		HttpSession session = req.getSession();
 		UserInfo ui = (UserInfo)session.getAttribute("userInfo");
 		
 		String accessToken = ui.getAccess_token();
-		String refreshToken = ui.getRefresh_token();
-		
-		System.out.println("AT: "+accessToken);
-		System.out.println("RT: "+refreshToken);
-		
-		mv.addObject("userInfo", ui);
-		System.out.println(ui);
 		
 		DocsService service = new DocsService("mayRoro");
 		service.setHeader("Authorization", "OAuth "+accessToken);
 		
 		try {
-			URL metafeedUrl = new URL("https://spreadsheets.google.com/feeds/spreadsheets/private/full");
+			URL metafeedUrl = new URL("https://spreadsheets.google.com/feeds/spreadsheets/private/full?title="+ConstFunc.SPREADSHEET_PREFIX);
 			SpreadsheetFeed feed = service.getFeed(metafeedUrl, SpreadsheetFeed.class);
 			List<SpreadsheetEntry> spreadsheets = feed.getEntries();
 			for (int i = 0; i < spreadsheets.size(); i++) {
 				SpreadsheetEntry entry = spreadsheets.get(i);
-				System.out.println("\t" + entry.getTitle().getPlainText());
-				System.out.println(entry.getKey());
+				entry.setTitle(new PlainTextConstruct(entry.getTitle().getPlainText().substring(ConstFunc.SPREADSHEET_PREFIX.length())));
+				System.out.println("Self: "+entry.getSelfLink().getHref());
 			}
 			mv.addObject("spreadsheets", spreadsheets);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		
-		String newSpreadsheet = null;
-		newSpreadsheet = req.getParameter("new_spreadsheet");
-		if("true".equals(newSpreadsheet)){
-			ConstFunc.createNewSpreadsheet(service, "*mayRoro-Ustvarjen projekt");
+//		************* Seznam vseh map *************
+//		try {
+//			URL metafeedUrl = new URL("https://docs.google.com/feeds/default/private/full/-/folder");
+//			Feed feed = service.getFeed(metafeedUrl, Feed.class);
+//			List<Entry> spreadsheets = feed.getEntries();
+//			for (int i = 0; i < spreadsheets.size(); i++) {
+//				Entry entry = spreadsheets.get(i);
+//				System.out.println("\t" + entry.getTitle().getPlainText());
+//			}
+//			mv.addObject("spreadsheets", spreadsheets);
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
+		
+		return mv;
+	}
+	
+	@RequestMapping("maut/{spreadsheetID}")
+	public ModelAndView maut(HttpServletRequest req, HttpServletResponse res, @PathVariable String spreadsheetID){
+		ModelAndView mv = new ModelAndView("maut");
+		
+		HttpSession session = req.getSession();
+		String accessToken = ((UserInfo)session.getAttribute("userInfo")).getAccess_token();
+		
+		DocsService service = new DocsService("mayRoro");
+		service.setHeader("Authorization", "OAuth "+accessToken);
+		
+		try {
+			URL spreadsheetUrl = new URL("https://spreadsheets.google.com/feeds/spreadsheets/private/full/"+spreadsheetID);
+			SpreadsheetEntry spreadsheet = service.getEntry(spreadsheetUrl, SpreadsheetEntry.class);
+			
+			System.out.println("Title: "+spreadsheet.getTitle().getPlainText());
+			
+			spreadsheet.setTitle(new PlainTextConstruct(spreadsheet.getTitle().getPlainText().substring(ConstFunc.SPREADSHEET_PREFIX.length())));
+			mv.addObject("spreadsheet", spreadsheet);
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 		
 		return mv;

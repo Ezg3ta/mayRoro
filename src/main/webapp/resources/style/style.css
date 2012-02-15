@@ -48,6 +48,47 @@ body{
 	background-image: -webkit-linear-gradient(bottom, rgb(245,245,245) 0%, rgb(254,254,254) 100%);
 	background-image: -ms-linear-gradient(bottom, rgb(245,245,245) 0%, rgb(254,254,254) 100%);
 }
+#top .content{
+	height:inherit;
+	margin:auto;
+	width:80%;
+	min-width:900px;
+}
+#top .content div{
+	float:left;
+}
+#top .content .menu{
+	float:right;
+	margin-right:100px;
+}
+#top .content .menu .btnM{
+	margin-left:10px;
+	padding:18px;
+	font-weight:bold;
+	cursor:pointer;
+}
+#top .content .menu .btnM:hover{
+	color:#0099FF;
+}
+#top .content .user{
+	float:right;
+	line-height:50px;
+	cursor:pointer;
+}
+#top .content .logout{
+	float:right;
+	line-height:50px;
+	cursor:pointer;
+	margin-left:8px;
+}
+#top .content .user:hover,  #top .content .logout:hover{
+	text-decoration:underline;
+}
+#top .content .logo{
+	width:120px;
+	line-height:50px;
+}
+
 
 #leftNav{
 	position:absolute;
@@ -249,7 +290,12 @@ body{
 }
 
 /*	za google api	*/
-#chart_div{
+#table_div{
+	width:80%;
+	margin:auto;
+	min-height:700px;
+}
+#chart_div, #result_chart_div{
 	width:80%;
 	margin:auto;
 	height:700px;
@@ -281,9 +327,25 @@ body{
 	max-width:60px;
 }
 .google-visualization-orgchart-node-medium input:hover{
-	background-color:rgba(256, 256, 256, 0.33);
+	background-color:rgba(256, 256, 256, 0.44);
 }
 
+
+.tblInput{
+	border:none;
+	background-color:rgba(256, 256, 256, 0.33);
+	width:92%;
+	margin:auto;
+	outline:none;
+	display:block;
+	text-align:center;
+	border-radius:3px;
+	padding:2px;
+	max-width:60px;
+}
+.tblInput:hover{
+	background-color:rgba(256, 256, 256, 0.77);
+}
 
 
 /*	utilityGraph	*/

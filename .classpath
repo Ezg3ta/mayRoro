@@ -38,5 +38,10 @@
 	<classpathentry kind="lib" path="src/main/webapp/WEB-INF/lib/jsontoken-1.0.jar"/>
 	<classpathentry kind="lib" path="src/main/webapp/WEB-INF/lib/mail.jar"/>
 	<classpathentry kind="lib" path="src/main/webapp/WEB-INF/lib/mysql-connector-java-5.1.16-bin.jar"/>
+	<classpathentry kind="lib" path="src/main/webapp/WEB-INF/lib/commons-lang-2.4.jar"/>
+	<classpathentry kind="lib" path="src/main/webapp/WEB-INF/lib/commons-logging-1.1.1.jar"/>
+	<classpathentry kind="lib" path="src/main/webapp/WEB-INF/lib/icu4j-4_0_1.jar"/>
+	<classpathentry kind="lib" path="src/main/webapp/WEB-INF/lib/opencsv-1.8.jar"/>
+	<classpathentry kind="lib" path="src/main/webapp/WEB-INF/lib/visualization-datasource-1.1.1.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>
