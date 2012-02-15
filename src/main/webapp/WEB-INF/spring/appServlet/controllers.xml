@@ -17,6 +17,7 @@
 					<value>/mayRoro/</value>
 					<value>/mayRoro/index</value>
 					<value>/mayRoro/login</value>
+					<value>/mayRoro/util/save</value>
 				</list>
 			</constructor-arg>
 		</bean>

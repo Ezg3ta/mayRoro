@@ -21,7 +21,7 @@ public class DefaultInterceptor extends HandlerInterceptorAdapter {
 	@Override
 	public boolean preHandle(HttpServletRequest req, HttpServletResponse res, Object handler) throws Exception {
 		String reqURI = req.getRequestURI();
-		
+		System.out.println(reqURI);
 		boolean intercept = true;
 		
 		// Ali gre za request resourcev
@@ -39,6 +39,9 @@ public class DefaultInterceptor extends HandlerInterceptorAdapter {
 
 		HttpSession session = req.getSession();
 		
+		req.setAttribute("intercept", intercept);
+		
+		/*
 		// Strani, kjer moraš biti loginan
 		if (intercept){
 			if (session.getAttribute("userInfo") != null){
@@ -56,8 +59,8 @@ public class DefaultInterceptor extends HandlerInterceptorAdapter {
 			else
 				res.sendRedirect(req.getContextPath()+"/home");
 		}
-		
-		return false;
+		*/
+		return true;
 	}
 
 	@Override

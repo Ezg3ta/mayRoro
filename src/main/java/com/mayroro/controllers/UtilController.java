@@ -1,6 +1,9 @@
 package com.mayroro.controllers;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.net.URL;
 import java.util.Enumeration;
 
@@ -11,18 +14,21 @@ import javax.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.google.gdata.client.docs.DocsService;
+import com.google.gdata.client.uploader.ResumableHttpFileUploader.RequestMethod;
 import com.google.gdata.data.PlainTextConstruct;
 import com.google.gdata.data.docs.SpreadsheetEntry;
 import com.google.gdata.data.spreadsheet.WorksheetEntry;
 import com.google.gdata.util.ServiceException;
+import com.google.gson.Gson;
 import com.google.visualization.datasource.datatable.DataTable;
 import com.mayroro.util.ConstFunc;
 import com.mayroro.util.UserInfo;
 
 @Controller
-@RequestMapping("util")
+@RequestMapping("/util")
 public class UtilController {
 	@RequestMapping("new_spreadsheet")
 	public String newSpreadsheet(HttpServletRequest req, HttpServletResponse res, @RequestParam("title") String title){
@@ -44,15 +50,19 @@ public class UtilController {
 		}
 	}
 	
-	@RequestMapping(value="save")
-	public String save(HttpServletRequest req, HttpServletResponse res){
-		Enumeration<String> params = req.getAttributeNames();
+	@RequestMapping(value="/save")
+	public @ResponseBody String save(@RequestParam("drevo") String drevo, @RequestParam("funkcije") String funkcije, @RequestParam("maut") String maut, HttpServletRequest req) {
+
+		//System.out.println("ATTRIBUTES:");
+		//System.out.println(drevo + " " + funkcije + " " + maut);
 		
-		System.out.println("ATTRIBUTES:");
-		while(params.hasMoreElements())
-			System.out.println(params.nextElement());
-		
-		return "redirect:/home";
+
+		Gson gson = new Gson();
+		DataTable dataTable = gson.fromJson(drevo, DataTable.class);
+		System.out.println(dataTable.getCell(0,0));
+
+
+		return "ok";
 	}
 	
 	

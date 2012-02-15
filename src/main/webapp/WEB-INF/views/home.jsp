@@ -321,7 +321,7 @@ $(".tblInput").live("focusout", function(){
 
 
 $(".logout").live("click", function(){
-	$.get("http://127.0.0.1/mayRoro/logout");
+	$.get("logout");
 	$.get("https://accounts.google.com/Logout");
 	return false;
 	
@@ -330,18 +330,14 @@ $(".logout").live("click", function(){
 
 $(".save").live("click", function(){
 	$.post(
-		"http://127.0.0.1/mayRoro/util/save", 
-		{drevo: data, funkcije: null, maut: tableData},
-		function(data) {
-		   process(data);
+		"util/save", 
+		{drevo: data.toJSON(), funkcije: "asd", maut: "asd"},
+		function(a) {
+		   alert(a);
 		}
 	);
 	
 });
-
-util/save
-
-
 
 
 </script>
