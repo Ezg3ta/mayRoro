@@ -67,6 +67,7 @@ public class GUIController {
 		String accessToken = authResponse.accessToken;
 		
 		System.out.println("accessToken: "+accessToken);
+		System.out.println("refreshToken: "+authResponse.refreshToken);
 		
 		// Get user data
 		
@@ -91,10 +92,6 @@ public class GUIController {
 		UserInfo ui = (UserInfo)session.getAttribute("userInfo");
 		
 		String accessToken = ui.getAccess_token();
-		String refreshToken = ui.getRefresh_token();
-		
-		System.out.println("AT: "+accessToken);
-		System.out.println("RT: "+refreshToken);
 		
 		DocsService service = new DocsService("mayRoro");
 		service.setHeader("Authorization", "OAuth "+accessToken);
@@ -106,8 +103,6 @@ public class GUIController {
 			for (int i = 0; i < spreadsheets.size(); i++) {
 				SpreadsheetEntry entry = spreadsheets.get(i);
 				entry.setTitle(new PlainTextConstruct(entry.getTitle().getPlainText().substring(9)));
-				System.out.println("\t" + entry.getTitle().getPlainText());
-				System.out.println(entry.getKey());
 			}
 			mv.addObject("spreadsheets", spreadsheets);
 		} catch (Exception e) {

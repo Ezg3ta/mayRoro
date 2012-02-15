@@ -21,12 +21,13 @@ public class DefaultInterceptor extends HandlerInterceptorAdapter {
 	@Override
 	public boolean preHandle(HttpServletRequest req, HttpServletResponse res, Object handler) throws Exception {
 		String reqURI = req.getRequestURI();
+		System.out.println("RequestURI: "+reqURI);
 		
 		boolean intercept = true;
 		
 		// preverjanje nevkljuèenih URI-jev
 		if (reqURI.contains(resourceURI.subSequence(0, resourceURI.length())))
-			intercept = false;
+			return true;
 		else {
 			for (String URI : excludedURIs){
 				if (reqURI.equals(URI)){
@@ -65,8 +66,6 @@ public class DefaultInterceptor extends HandlerInterceptorAdapter {
 		
 		// Strani, ki rabijo objekte iz sessiona
 		if (intercept){
-			System.out.println("POST HANDLE: true!");
-			
 			UserInfo ui = (UserInfo) req.getSession().getAttribute("userInfo");
 			mv.addObject("userInfo", ui);
 		}

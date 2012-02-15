@@ -9,6 +9,7 @@ import javax.servlet.http.HttpSession;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.google.gdata.client.docs.DocsService;
@@ -23,7 +24,7 @@ import com.mayroro.util.UserInfo;
 @RequestMapping("util")
 public class UtilController {
 	@RequestMapping("new_spreadsheet")
-	public ModelAndView newSpreadsheet(HttpServletRequest req, HttpServletResponse res){
+	public ModelAndView newSpreadsheet(HttpServletRequest req, HttpServletResponse res, @RequestParam("title") String title){
 		ModelAndView mv = new ModelAndView("redirect:/home");
 		
 		HttpSession session = req.getSession();
@@ -32,8 +33,6 @@ public class UtilController {
 		DocsService service = new DocsService("mayRoro");
 		service.setHeader("Authorization", "OAuth "+ui.getAccess_token());
 		
-		String title = null;
-		title = req.getParameter("title");
 		if(title == null)
 			return new ModelAndView("forward:/error?type=parameter_missing");
 		
