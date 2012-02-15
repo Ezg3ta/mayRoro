@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -16,19 +17,16 @@ import com.google.api.client.auth.oauth2.draft10.AccessTokenResponse;
 import com.google.api.client.googleapis.auth.oauth2.draft10.GoogleAuthorizationRequestUrl;
 import com.google.api.client.googleapis.auth.oauth2.draft10.GoogleAccessTokenRequest.GoogleAuthorizationCodeGrant;
 import com.google.gdata.client.docs.DocsService;
-import com.google.gdata.data.Feed;
 import com.google.gdata.data.PlainTextConstruct;
-import com.google.gdata.data.docs.FolderEntry;
 import com.google.gdata.data.spreadsheet.SpreadsheetEntry;
 import com.google.gdata.data.spreadsheet.SpreadsheetFeed;
-import com.google.gdata.data.Entry;
 import com.mayroro.util.ConstFunc;
 import com.mayroro.util.UserInfo;
 
 @Controller
 @RequestMapping("")
 public class GUIController {
-	@RequestMapping(value={"/", "/index"})
+	@RequestMapping(value={"", "index"})
 	public ModelAndView indexController(HttpServletRequest req, HttpServletResponse res) {
 		ModelAndView mv = new ModelAndView("index");
 		
@@ -38,7 +36,7 @@ public class GUIController {
 		return mv;
 	}
 	
-	@RequestMapping("/login")
+	@RequestMapping("login")
 	public ModelAndView login(HttpServletRequest req, HttpServletResponse res){
 		ModelAndView mv = new ModelAndView("redirect:/home");
 		
@@ -85,7 +83,7 @@ public class GUIController {
 		return mv;
 	}
 	
-	@RequestMapping("/home")
+	@RequestMapping("home")
 	public ModelAndView welcomeHandler(HttpServletRequest req, HttpServletResponse res) {
 		ModelAndView mv = new ModelAndView("home");
 		
@@ -97,8 +95,6 @@ public class GUIController {
 		
 		System.out.println("AT: "+accessToken);
 		System.out.println("RT: "+refreshToken);
-		
-		mv.addObject("userInfo", ui);
 		
 		DocsService service = new DocsService("mayRoro");
 		service.setHeader("Authorization", "OAuth "+accessToken);
@@ -131,6 +127,15 @@ public class GUIController {
 //		} catch (Exception e) {
 //			e.printStackTrace();
 //		}
+		
+		return mv;
+	}
+	
+	@RequestMapping("maut/{spreadsheetID}")
+	public ModelAndView maut(HttpServletRequest req, HttpServletResponse res, @PathVariable int spreadsheetID){
+		ModelAndView mv = new ModelAndView("maut");
+		
+		
 		
 		return mv;
 	}

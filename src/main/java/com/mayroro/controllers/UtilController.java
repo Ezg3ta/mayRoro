@@ -20,9 +20,9 @@ import com.mayroro.util.ConstFunc;
 import com.mayroro.util.UserInfo;
 
 @Controller
-@RequestMapping("/util")
+@RequestMapping("util")
 public class UtilController {
-	@RequestMapping("/new_spreadsheet")
+	@RequestMapping("new_spreadsheet")
 	public ModelAndView newSpreadsheet(HttpServletRequest req, HttpServletResponse res){
 		ModelAndView mv = new ModelAndView("redirect:/home");
 		
