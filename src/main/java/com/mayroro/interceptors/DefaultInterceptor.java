@@ -1,7 +1,5 @@
 package com.mayroro.interceptors;
 
-import java.text.DecimalFormat;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -23,7 +21,6 @@ public class DefaultInterceptor extends HandlerInterceptorAdapter {
 	@Override
 	public boolean preHandle(HttpServletRequest req, HttpServletResponse res, Object handler) throws Exception {
 		String reqURI = req.getRequestURI();
-		System.out.println("RequestURI: "+reqURI);
 		
 		boolean intercept = true;
 		

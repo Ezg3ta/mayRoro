@@ -109,7 +109,7 @@ public class GUIController {
 			List<SpreadsheetEntry> spreadsheets = feed.getEntries();
 			for (int i = 0; i < spreadsheets.size(); i++) {
 				SpreadsheetEntry entry = spreadsheets.get(i);
-				entry.setTitle(new PlainTextConstruct(entry.getTitle().getPlainText().substring(9)));
+				entry.setTitle(new PlainTextConstruct(entry.getTitle().getPlainText().substring(ConstFunc.SPREADSHEET_PREFIX.length())));
 				System.out.println("Self: "+entry.getSelfLink().getHref());
 			}
 			mv.addObject("spreadsheets", spreadsheets);
@@ -147,7 +147,10 @@ public class GUIController {
 		try {
 			URL spreadsheetUrl = new URL("https://spreadsheets.google.com/feeds/spreadsheets/private/full/"+spreadsheetID);
 			SpreadsheetEntry spreadsheet = service.getEntry(spreadsheetUrl, SpreadsheetEntry.class);
-			spreadsheet.setTitle(new PlainTextConstruct(spreadsheet.getTitle().getPlainText().substring(9)));
+			
+			System.out.println("Title: "+spreadsheet.getTitle().getPlainText());
+			
+			spreadsheet.setTitle(new PlainTextConstruct(spreadsheet.getTitle().getPlainText().substring(ConstFunc.SPREADSHEET_PREFIX.length())));
 			mv.addObject("spreadsheet", spreadsheet);
 		} catch (Exception e) {
 			e.printStackTrace();
