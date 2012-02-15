@@ -12,12 +12,18 @@
 	
 	<mvc:interceptors>
 		<bean class="com.mayroro.interceptors.DefaultInterceptor">
-			<constructor-arg>
+			<constructor-arg name="noLogin">
 				<list>
 					<value>/mayRoro/</value>
 					<value>/mayRoro/index</value>
 					<value>/mayRoro/login</value>
+				</list>
+			</constructor-arg>
+			<constructor-arg name="skip">
+				<list>
+					<value>/mayRoro/test</value>
 					<value>/mayRoro/util/save</value>
+					<value>/mayRoro/resources</value>
 				</list>
 			</constructor-arg>
 		</bean>

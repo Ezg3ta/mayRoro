@@ -10,42 +10,39 @@ import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 import com.mayroro.util.UserInfo;
 
 public class DefaultInterceptor extends HandlerInterceptorAdapter {
-	private String[] excludedURIs;
-	private String resourceURI;
+	private String[] noLoginURIs;
+	private String[] skipURIs;
 	
-	public DefaultInterceptor(String[] param_list){
-		excludedURIs = param_list;
-		resourceURI = "/mayRoro/resources";
+	public DefaultInterceptor(String[] noLogin, String[] skip){
+		noLoginURIs = noLogin;
+		skipURIs = skip;
 	}
 
 	@Override
 	public boolean preHandle(HttpServletRequest req, HttpServletResponse res, Object handler) throws Exception {
 		String reqURI = req.getRequestURI();
 		System.out.println(reqURI);
-		boolean intercept = true;
+		boolean login = true;
 		
-		// Ali gre za request resourcev
-		if (reqURI.contains(resourceURI.subSequence(0, resourceURI.length())))
-			return true;
+		// Ali gre za stran, ki jo je treba preskoèiti
+		for (String URI : skipURIs){
+			if (reqURI.startsWith(URI))
+				return true;
+		}
 		// Ali gre za stran, kjer ne rabiš biti loginan
-		else {
-			for (String URI : excludedURIs){
-				if (reqURI.equals(URI)){
-					intercept = false;
-					break;
-				}
+		for (String URI : noLoginURIs){
+			if (reqURI.equals(URI)){
+				login = false;
+				break;
 			}
 		}
 
 		HttpSession session = req.getSession();
 		
-		req.setAttribute("intercept", intercept);
-		
-		/*
 		// Strani, kjer moraš biti loginan
-		if (intercept){
+		if (login){
 			if (session.getAttribute("userInfo") != null){
-				req.setAttribute("intercept", intercept);
+				req.setAttribute("login", login);
 				return true;
 			}
 			else
@@ -59,16 +56,16 @@ public class DefaultInterceptor extends HandlerInterceptorAdapter {
 			else
 				res.sendRedirect(req.getContextPath()+"/home");
 		}
-		*/
-		return true;
+		
+		return false;
 	}
 
 	@Override
 	public void postHandle(HttpServletRequest req, HttpServletResponse res, Object handler, ModelAndView mv) throws Exception {
-		boolean intercept = req.getAttribute("intercept") != null;
+		boolean login = req.getAttribute("login") != null;
 		
 		// Strani, ki rabijo objekte iz sessiona
-		if (intercept){
+		if (login){
 			UserInfo ui = (UserInfo) req.getSession().getAttribute("userInfo");
 			mv.addObject("userInfo", ui);
 		}

@@ -1,11 +1,7 @@
 package com.mayroro.controllers;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
 import java.net.URL;
-import java.util.Enumeration;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -17,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.google.gdata.client.docs.DocsService;
-import com.google.gdata.client.uploader.ResumableHttpFileUploader.RequestMethod;
 import com.google.gdata.data.PlainTextConstruct;
 import com.google.gdata.data.docs.SpreadsheetEntry;
 import com.google.gdata.data.spreadsheet.WorksheetEntry;
@@ -53,18 +48,23 @@ public class UtilController {
 	@RequestMapping(value="/save")
 	public @ResponseBody String save(@RequestParam("drevo") String drevo, @RequestParam("funkcije") String funkcije, @RequestParam("maut") String maut, HttpServletRequest req) {
 
-		//System.out.println("ATTRIBUTES:");
-		//System.out.println(drevo + " " + funkcije + " " + maut);
+		System.out.println("ATTRIBUTES:");
+		System.out.println("drevo: "+ drevo + "\nFunkcije: " + funkcije + "\nMaut: " + maut);
 		
-
-		Gson gson = new Gson();
-		DataTable dataTable = gson.fromJson(drevo, DataTable.class);
-		System.out.println(dataTable.getCell(0,0));
-
-
+		DataTable dataTable = jsonDataTable(drevo, DataTable.class);
+		System.out.println("Cols: "+dataTable.getNumberOfColumns());
+		System.out.println("Rows: "+dataTable.getNumberOfRows());
+		
 		return "ok";
 	}
 	
+	private <T> T jsonDataTable(String json, Class<T> classOfT){
+		Gson gson = new Gson();
+		String converted = json.replaceFirst("cols", "columns");
+		converted = converted.replaceAll("\"type\":\"string\"", "\"type\":\"TEXT\"");
+		converted = converted.replaceAll("\"type\":\"number\"", "\"type\":\"NUMBER\"");
+		return gson.fromJson(converted, classOfT);
+	}
 	
 	private SpreadsheetEntry createNewSpreadsheet(DocsService service, String title) throws IOException, ServiceException {
 		SpreadsheetEntry newEntry = new SpreadsheetEntry();
