@@ -11,13 +11,14 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-
 import com.google.gdata.client.docs.DocsService;
 import com.google.gdata.data.PlainTextConstruct;
 import com.google.gdata.data.docs.SpreadsheetEntry;
 import com.google.gdata.data.spreadsheet.WorksheetEntry;
 import com.google.gdata.util.ServiceException;
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
+import com.google.visualization.datasource.base.TypeMismatchException;
 import com.google.visualization.datasource.datatable.DataTable;
 import com.mayroro.util.ConstFunc;
 import com.mayroro.util.UserInfo;
@@ -51,19 +52,30 @@ public class UtilController {
 		System.out.println("ATTRIBUTES:");
 		System.out.println("drevo: "+ drevo + "\nFunkcije: " + funkcije + "\nMaut: " + maut);
 		
-		DataTable dataTable = jsonDataTable(drevo, DataTable.class);
-		System.out.println("Cols: "+dataTable.getNumberOfColumns());
-		System.out.println("Rows: "+dataTable.getNumberOfRows());
+		DataTable dt;
+		Gson gson = new Gson();
+		try {
+			dt = gson.fromJson(jsonDataTable(drevo), com.mayroro.util.DataTable.class).convert();
+			System.out.println("0,0: "+dt.getCell(0, 0).isNull());
+			System.out.println("6,2: "+dt.getCell(6, 2).isNull());
+			System.out.println(dt);
+		} catch (JsonSyntaxException e) {
+			e.printStackTrace();
+		} catch (TypeMismatchException e) {
+			e.printStackTrace();
+		}
 		
 		return "ok";
 	}
 	
-	private <T> T jsonDataTable(String json, Class<T> classOfT){
-		Gson gson = new Gson();
+	private static String jsonDataTable(String json){
 		String converted = json.replaceFirst("cols", "columns");
 		converted = converted.replaceAll("\"type\":\"string\"", "\"type\":\"TEXT\"");
 		converted = converted.replaceAll("\"type\":\"number\"", "\"type\":\"NUMBER\"");
-		return gson.fromJson(converted, classOfT);
+		converted = converted.replaceAll("\\{\"c\":\\[", "\\{\"cells\":\\[");
+		converted = converted.replaceAll("\\{\"v\":", "\\{\"value\":");
+		converted = converted.replaceAll("\"f\":", "\"formattedValue\":");
+		return converted;
 	}
 	
 	private SpreadsheetEntry createNewSpreadsheet(DocsService service, String title) throws IOException, ServiceException {
