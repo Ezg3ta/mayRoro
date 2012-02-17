@@ -69,6 +69,10 @@ var defaultCoords = [[1,0.5],[2,0.5],[3,0.5],[4, 0.5],[5, 0.5],[6, 0.5],[7, 0.5]
 
 var tableData = new google.visualization.DataTable();
 var initedTable = false;
+
+
+var functionData = new google.visualization.DataTable();
+var initedFunctions = false;
 //toolbar
 
 $(window).resize(function() {
@@ -111,12 +115,32 @@ function initNodesIds(){
 		nodesIds[index] = _nodeId;
 		nodesName[index] = _nodeName;
     });
+	var coords;
 	
 	for(i = 0; i < nodesIds.length; i++){
 		
 		coords = defaultCoords;
+		min = 1;
+		max = 20;
 		
-		nodesData[i] = new GraphData(nodesName[i], nodesIds[i], coords, 1, 20);
+		for(j = 0; j < functionData.getNumberOfColumns(); j=j+2){
+			//alert(functionData.getValue(0,j))
+			if(nodesName[i] == functionData.getColumnLabel(j)){
+				//min = functionData.getValue(0, j);
+				//max = functionData.getValue(0, j+1);
+				
+				coords = _create2DArray(20);
+				
+				for(k = 0; k < 20; k++){
+					coords[k][0] = functionData.getValue(k + 1, j);
+					coords[k][1] = functionData.getValue(k + 1, j + 1);
+				}
+			}
+		}
+		
+		
+		
+		nodesData[i] = new GraphData(nodesName[i], nodesIds[i], coords, min, max);
 	}
 	
 	nodesIdsSorted = nodesIds.sort();
@@ -186,6 +210,23 @@ function initUtilityGraph(name, pointCoords, min, max){
 	$(".closePopup").live("click", function(){
 		hidePopup();
 		nodesData[currentNodeIndex].pointCoords = plot.series[0].data;
+		
+		name = nodesData[currentNodeIndex].name;
+		coords = nodesData[currentNodeIndex].pointCoords;
+		
+		for(j = 0; j < functionData.getNumberOfColumns(); j=j+2){
+			if(name == functionData.getColumnLabel(j)){
+				
+				for(k = 0; k < 20; k++){
+					functionData.setCell(k + 1, j, coords[k][0]);
+					functionData.setCell(k + 1, j + 1, coords[k][1]);
+				}
+				
+				break;
+			}
+		}
+		
+		
 		plot.destroy();
 	});
 	
@@ -334,7 +375,7 @@ $(".logout").live("click", function(){
 $(".save").live("click", function(){
 	$.post(
 		"<%=request.getContextPath()%>/util/save", 
-		{drevo: data.toJSON(), funkcije: "asd", maut: tableData.toJSON(), key: spreadsheetKey},
+		{drevo: data.toJSON(), funkcije: functionData.toJSON(), maut: tableData.toJSON(), key: spreadsheetKey},
 		function(a) {
 		   alert(a);
 		}
@@ -394,13 +435,28 @@ $(".save").live("click", function(){
 
 <script type="text/javascript">
 
+initFunctionData();
+
+function initFunctionData() {
+	  var query = new google.visualization.Query(
+	  		spreadsheetHref + '&sheet=funkcije');
+	  query.send(functionDataResponse);
+	}
+	
+function functionDataResponse(response) {
+
+	if (response.isError()) {
+		alert('Error in query: ' + response.getMessage() + ' ' + response.getDetailedMessage());
+		return;
+	}
+	
+	functionData = response.getDataTable();
+}
+
+
 function drawVisualization() {
-  // To see the data that this visualization uses, browse to
-  // http://spreadsheets.google.com/ccc?key=pCQbetd-CptGXxxQIG7VFIQ  
   var query = new google.visualization.Query(
-	  //'https://docs.google.com/spreadsheet/ccc?key=0AhhkkHUzjYDbdHFQdHRpMFBnektVb2ZNSVdKcDNvMVE&hl=en_US#gid=0');
-  		'https://docs.google.com/spreadsheet/ccc?key=0AsDL-_qKVv8rdDliRVhLbkJmVjRfSndmZy1aWDlHS0E&sheet=drevo');
-  // Send the query with a callback function.
+  		spreadsheetHref + '&sheet=drevo');
   query.send(handleQueryResponse);
 }
 
@@ -584,7 +640,7 @@ google.setOnLoadCallback(drawVisualization);
 		  
 		  if(initedTable == false){
 			  var query = new google.visualization.Query(
-				'https://docs.google.com/spreadsheet/ccc?key=0AsDL-_qKVv8rdDliRVhLbkJmVjRfSndmZy1aWDlHS0E&sheet=maut&headers=1');
+				spreadsheetHref + '&sheet=maut&headers=1');
 			  // Send the query with a callback function.
 			  query.send(drawTableInit);
 			  initedTable = true;
