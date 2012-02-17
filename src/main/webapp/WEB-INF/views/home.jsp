@@ -8,14 +8,14 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<title>mautit</title>
-<link charset="utf-8" rel="stylesheet" href="resources/style/style.css" type="text/css" />
-<link charset="utf-8" rel="stylesheet" href="resources/style/jqplot.css" type="text/css" />
+<title>mayRoro</title>
+<link charset="utf-8" rel="stylesheet" href="<c:out value="${pageContext.request.contextPath}" />/resources/style/style.css" type="text/css" />
+<link charset="utf-8" rel="stylesheet" href="<c:out value="${pageContext.request.contextPath}" />/resources/style/jqplot.css" type="text/css" />
 <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4/jquery.min.js"></script>
-<script type="text/javascript" src="resources/script/custom.js"></script>
+<script type="text/javascript" src="<c:out value="${pageContext.request.contextPath}" />/resources/script/custom.js"></script>
 <script type="text/javascript" src="https://www.google.com/jsapi"></script>
-<script type="text/javascript" src="resources/script/jquery.jqplot.min.js"></script>
-<script type="text/javascript" src="resources/script/plugins/allinone.js"></script>
+<script type="text/javascript" src="<c:out value="${pageContext.request.contextPath}" />/resources/script/jquery.jqplot.min.js"></script>
+<script type="text/javascript" src="<c:out value="${pageContext.request.contextPath}" />/resources/script/plugins/allinone.js"></script>
 
 <script>
 
@@ -59,6 +59,9 @@ var nodesData = new Array();
 var alternatives = new Array();
 var currentNodeIndex;
 var currentItem;
+
+var spreadsheetHref = "${spreadsheet.htmlLink.href}";
+var spreadsheetKey = "${spreadsheet.key}";
 
 var plot;
 
@@ -234,7 +237,7 @@ function _getCurrentNodeIndex(){
 
 /* triggeri */
 $(".addModelNode").live("click", function(){
-	data.addRow(['<input type="text" value="'+(newNodeId)+'" nodeid="'+(newNodeId)+'"/>', currentNode]);
+	data.addRow(['<input type="text" value="'+(newNodeId)+'" nodeid="'+(newNodeId)+'"/>', currentNode, 0]);
 	mautModel.draw(data, {allowHtml:true});
 	mautModel.setSelection();
 	hideToolbar();
@@ -330,8 +333,8 @@ $(".logout").live("click", function(){
 
 $(".save").live("click", function(){
 	$.post(
-		"util/save", 
-		{drevo: data.toJSON(), funkcije: "asd", maut: "asd"},
+		"<c:out value="${pageContext.request.contextPath}" />/util/save", 
+		{drevo: data.toJSON(), funkcije: "asd", maut: tableData.toJSON(), key: spreadsheetKey},
 		function(a) {
 		   alert(a);
 		}
@@ -357,13 +360,6 @@ $(".save").live("click", function(){
         <div class="menu">
         
         	<div class="btnM">Projekti</div>
-        	<div style="display: none;">
-        	
-        		<c:forEach var="spreadsheet" items="${spreadsheets}">
-				 	<a href="<c:out value="maut/${spreadsheet.key}" />"><c:out value="${spreadsheet.title.plainText}" /></a><br />
-				</c:forEach>
-				        	
-        	</div>
             <div class="btnM">Pomoč</div>
             <div class="btnM">Kontakt</div>
             
@@ -373,335 +369,16 @@ $(".save").live("click", function(){
     </div>
     </div>
     
-    <div class="mainNav" id="leftNav">
-    	<div class="btn blueGrad">model</div><br />
-        <div class="btn greenGrad">alternative</div><br />
-        <div class="btn yellowGrad">rezultat</div>
-    </div>
-    
-    <div id="toolbox">
-    	<div class="line greenGrad">
-        </div>
-        <div class="icon50 save"></div><div class="iconInfo">shrani</div>
-        <div class="icon50 saveVersion"></div><div class="iconInfo">verzioniraj</div>
-        <div class="icon50 openVersion"></div><div class="iconInfo">odpri verzijo</div>
-    </div>
-    
-    <div class="toolbar">
-        <a class="deleteModelNode">&times;</a> <a class="addModelNode">+</a> <!-- <a>&uArr;</a> <a>&dArr;</a>--> <a class="functionModelNode">&fnof;</a>
-    </div>
     
     <div id="board">
-    <div id="slide">
-        <div class="main">
-        	<h1>Model</h1>
+    
+    <h1>Seznam projektov </h1><br/><br/>
+    
+    <c:forEach var="spreadsheet" items="${spreadsheets}">
+      <a href="<c:out value="maut/${spreadsheet.key}" />"><c:out value="${spreadsheet.title.plainText}" /></a><br />
+    </c:forEach>
+    
 
-<script type="text/javascript">
-
-function drawVisualization() {
-  // To see the data that this visualization uses, browse to
-  // http://spreadsheets.google.com/ccc?key=pCQbetd-CptGXxxQIG7VFIQ  
-  var query = new google.visualization.Query(
-	  //'https://docs.google.com/spreadsheet/ccc?key=0AhhkkHUzjYDbdHFQdHRpMFBnektVb2ZNSVdKcDNvMVE&hl=en_US#gid=0');
-  		'https://docs.google.com/spreadsheet/ccc?key=0AsDL-_qKVv8rdDliRVhLbkJmVjRfSndmZy1aWDlHS0E&sheet=drevo');
-  // Send the query with a callback function.
-  query.send(handleQueryResponse);
-}
-
-function handleQueryResponse(response) {
-	
-	
-	if (response.isError()) {
-		alert('Error in query: ' + response.getMessage() + ' ' + response.getDetailedMessage());
-		return;
-	}
-	
-	data = response.getDataTable();
-	mautModel = new google.visualization.OrgChart(document.getElementById('chart_div'));
-  
-	google.visualization.events.addListener(mautModel, 'select', function() {
-	  
-		var selection = mautModel.getSelection();
-		var item;
-		for (var i = 0; i < selection.length; i++) {
-			var str = '';
-			item = selection[i];
-			if (item.row != null && item.column != null) {
-			  str = data.getFormattedValue(item.row, item.column);
-			} else if (item.row != null) {
-			  str = data.getFormattedValue(item.row, 0);
-			} else if (item.column != null) {
-			  str = data.getFormattedValue(0, item.column);
-			}
-		}
-		
-		previousNode = currentNode;
-		currentNode = str;
-		nodeRowIndex = item.row;
-		currentItem = item;
-		
-		/*
-		if(str != ''){
-			data.addRow(['<input type="text" value="'+(nodeId++)+'"/>', str]);
-			mautModel.draw(data, {allowHtml:true});
-		}
-		mautModel.setSelection();*/
-	});
-  
-  
-  mautModel.draw(data, {allowHtml:true});
-  initNodesIds(); //get ids of nodes
-}
-
-google.setOnLoadCallback(drawVisualization);
-</script>
-
-            <div id="chart_div">
-            </div>
-        </div>
-        <div class="main">
-        	<h1>Alternative</h1>
-            
-            
-            <div id="table_div"></div>
-           
-           
-      <script type='text/javascript'>
-
-	  
-	  
-	  function _getLeafs(tblData, objData){
-		
-		var node;
-		var leafs = new Array();
-		var cnt = 0;
-		//alert(tblData.getValue(0,0));
-		var isLeaf = true;
-		
-		for(i = 0; i < objData.length; i++){
-			node = "\"" + objData[i].name + "\"";
-			
-			isLeaf = true;
-			for(j = 0; j < tblData.getNumberOfRows(); j++){
-				if(tblData.getValue(j, 1).indexOf(node) > 0){
-					isLeaf = false;
-					break;
-				}
-			}
-			
-			if(isLeaf == true){
-				leafs[cnt] = node.replace(/"/gi, "");
-				cnt++;
-			}
-		}
-		
-		return leafs;
-	  }
-	  
-	  function _getParents(tblData, objData){
-		
-		var node;
-		var parents = new Array();
-		var cnt = 0;
-		//alert(tblData.getValue(0,0));
-		var isLeaf = true;
-		
-		for(i = 0; i < objData.length; i++){
-			node = "\"" + objData[i].name + "\"";
-			
-			isLeaf = true;
-			for(j = 0; j < tblData.getNumberOfRows(); j++){
-				if(tblData.getValue(j, 1).indexOf(node) > 0){
-					isLeaf = false;
-					break;
-				}
-			}
-			
-			if(isLeaf == false){
-				parents[cnt] = node.replace(/"/gi, "");
-				cnt++;
-			}
-		}
-		
-		return parents;
-	  }
-	  
-	  
-	  function _getLeafsData(tblData, parents){
-		
-		var node;
-		var leafsDat = tblData;
-		//alert(tblData.getValue(0,0));
-		var isLeaf = true;
-		var cnt = 0;
-		
-		for(i = 0; i < parents.length; i++){
-			node = parents[i];
-			
-			isLeaf = true;
-			for(j = 0; j < tblData.getNumberOfRows(); j++){
-				if(tblData.getValue(j, 0) == node){
-					isLeaf = false;
-					break;
-				}
-			}
-			
-			if(isLeaf == false){
-				leafsDat.removeRow(j);
-			}
-		}
-		
-		return leafsDat;
-	  }
-	  
-	  
-	  
-	  
-	  function _makeInputable(data, row, col){
-		  
-		  var value;
-		  
-		  inputable = data.clone();
-
-		  for(i = row; i < data.getNumberOfRows(); i++){
-			  
-				for(j = col; j < data.getNumberOfColumns(); j++){
-					
-					val = data.getValue(i,j);
-					if (val == null){
-						val = "";
-					}
-					value = '<input class="tblInput" type="text" row="'+i+'" col="'+j+'" value="' + val + '"/>' ;
-				  	inputable.setCell(i,j, value);
-				}
-		  }
-		  
-		  return inputable;
-	  }
-	  
-	  
-	  
-      google.load('visualization', '1', {packages:['table']});
-	  
-	  
-	  function fillTable(){
-		  
-		  if(initedTable == false){
-			  var query = new google.visualization.Query(
-				'https://docs.google.com/spreadsheet/ccc?key=0AsDL-_qKVv8rdDliRVhLbkJmVjRfSndmZy1aWDlHS0E&sheet=maut&headers=1');
-			  // Send the query with a callback function.
-			  query.send(drawTableInit);
-			  initedTable = true;
-		  }
-		  else{
-			  drawTable();
-		  }
-		  
-	  }
-      
-      function drawTableInit(response) {
-	
-	
-		if (response.isError()) {
-			alert('Error in query: ' + response.getMessage() + ' ' + response.getDetailedMessage());
-			return;
-		}
-		
-		tableData = response.getDataTable();
-		
-		leafs = _getLeafs(data, nodesData);
-		parents = _getParents(data, nodesData);
-		leafsData =  _getLeafsData(tableData, parents);
-		
-		leafsDataInputable = _makeInputable(leafsData, 0, 1);
-
-        var table = new google.visualization.Table(document.getElementById('table_div'));
-        table.draw(leafsDataInputable, {sort: 'disable', showRowNumber: false, scrollLeftStartPosition: 400, allowHtml: true});
-      }
-	  
-	  function drawTable() {
-		
-		leafs = _getLeafs(data, nodesData);
-		parents = _getParents(data, nodesData);
-		leafsData =  _getLeafsData(tableData, parents);
-		
-		leafsDataInputable = _makeInputable(leafsData, 0, 1);
-
-        var table = new google.visualization.Table(document.getElementById('table_div'));
-        table.draw(leafsDataInputable, {sort: 'disable', showRowNumber: false, scrollLeftStartPosition: 400, allowHtml: true});
-      }
-	  
-	  //google.setOnLoadCallback(drawTable);
-    </script>
-            
-        <input id="alternativeName" type="text"  /><div class="btn addAlternative">dodaj alternativo</div>    
-            
-            
-        </div>
-        <div class="main">
-       		<h1>Rezultat</h1>
-            
-            <div id="result_chart_div"></div>
-            
-             <script type="text/javascript">
-      google.load("visualization", "1", {packages:["corechart"]});
-      google.setOnLoadCallback(drawChart);
-      function drawChart() {
-        var data = new google.visualization.DataTable();
-        data.addColumn('string', 'Year');
-        data.addColumn('number', 'Sales');
-        data.addColumn('number', 'Expenses');
-        data.addRows([
-          ['2004', 1000, 400],
-          ['2005', 1170, 460],
-          ['2006', 660, 1120],
-          ['2007', 1030, 540]
-        ]);
-
-        var options = {
-          width: 600, height: 400,
-          title: 'Company Performance',
-          hAxis: {title: 'Year', titleTextStyle: {color: 'red'}}
-        };
-
-        var chart = new google.visualization.ColumnChart(document.getElementById('result_chart_div'));
-        chart.draw(data, options);
-      }
-    </script>
-    
-            
-        </div>
-    </div>
-    </div>
-    
-    
-    
-    
-    
-    <div class="popup">
-    	<div class="closePopup">&times;</div>
-    	<div class="example-plot" id="utilityGraph"></div>  
-    </div>
-    
-    
-    
-    
-    
-    
-    <div id="bottomArea">
-    	<div class="btmNav noteBtn"></div>
-        <div class="btmNav helpBtn"></div>
-        <div class="area">
-            <div class="content">
-            	<div class="close">&times;</div>
-                <p>
-                Although experts were initially skeptical, this condition is now recognized as a common disorder, with its prevalence in the U.S. ranging from 1.4 percent in Florida to 9.7 percent in New Hampshire.[3]
-The U.S. National Library of Medicine notes that "some people experience a serious mood change when the seasons change. They may 
-                </p>
-            </div>
-            <div class="arrow"></div>
-        </div>
-    </div>
 
 </body>
 </html>
