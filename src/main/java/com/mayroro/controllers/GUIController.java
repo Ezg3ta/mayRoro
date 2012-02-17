@@ -20,6 +20,7 @@ import com.google.gdata.client.docs.DocsService;
 import com.google.gdata.data.PlainTextConstruct;
 import com.google.gdata.data.spreadsheet.SpreadsheetEntry;
 import com.google.gdata.data.spreadsheet.SpreadsheetFeed;
+import com.google.gdata.data.spreadsheet.WorksheetEntry;
 import com.mayroro.util.ConstFunc;
 import com.mayroro.util.UserInfo;
 
@@ -149,6 +150,10 @@ public class GUIController {
 			SpreadsheetEntry spreadsheet = service.getEntry(spreadsheetUrl, SpreadsheetEntry.class);
 			
 			System.out.println("Title: "+spreadsheet.getTitle().getPlainText());
+			
+			for (WorksheetEntry we : spreadsheet.getWorksheets()){
+				System.out.println(we.getTitle()+": "+we.getId());
+			}
 			
 			spreadsheet.setTitle(new PlainTextConstruct(spreadsheet.getTitle().getPlainText().substring(ConstFunc.SPREADSHEET_PREFIX.length())));
 			mv.addObject("spreadsheet", spreadsheet);

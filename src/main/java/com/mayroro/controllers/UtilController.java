@@ -1,7 +1,9 @@
 package com.mayroro.controllers;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -12,14 +14,18 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import com.google.gdata.client.docs.DocsService;
+import com.google.gdata.client.spreadsheet.SpreadsheetService;
 import com.google.gdata.data.PlainTextConstruct;
 import com.google.gdata.data.docs.SpreadsheetEntry;
 import com.google.gdata.data.spreadsheet.WorksheetEntry;
+import com.google.gdata.data.spreadsheet.WorksheetFeed;
+import com.google.gdata.util.AuthenticationException;
 import com.google.gdata.util.ServiceException;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.google.visualization.datasource.base.TypeMismatchException;
 import com.google.visualization.datasource.datatable.DataTable;
+import com.mayroro.util.BatchCellUpdater;
 import com.mayroro.util.ConstFunc;
 import com.mayroro.util.UserInfo;
 
@@ -47,21 +53,42 @@ public class UtilController {
 	}
 	
 	@RequestMapping(value="/save")
-	public @ResponseBody String save(@RequestParam("drevo") String drevo, @RequestParam("funkcije") String funkcije, @RequestParam("maut") String maut, HttpServletRequest req) {
+	public @ResponseBody String save(@RequestParam("drevo") String drevo, @RequestParam("funkcije") String funkcije, @RequestParam("maut") String maut, @RequestParam("key") String key, HttpServletRequest req) {
 
 		System.out.println("ATTRIBUTES:");
 		System.out.println("drevo: "+ drevo + "\nFunkcije: " + funkcije + "\nMaut: " + maut);
 		
-		DataTable dt;
-		Gson gson = new Gson();
+		HttpSession session = req.getSession();
+		String accessToken = ((UserInfo)session.getAttribute("userInfo")).getAccess_token();
+		System.out.println("ACCESS_TOKEN: "+accessToken);
+		
+		DocsService service = new DocsService("mayRoro");
+		service.setHeader("Authorization", "OAuth "+accessToken);
+		
+		SpreadsheetService ssSvc = new SpreadsheetService("mayRoro");
+		ssSvc.setHeader("Authorization", "OAuth "+accessToken);
+		
 		try {
-			dt = gson.fromJson(jsonDataTable(drevo), com.mayroro.util.DataTable.class).convert();
-			System.out.println("0,0: "+dt.getCell(0, 0).isNull());
-			System.out.println("6,2: "+dt.getCell(6, 2).isNull());
-			System.out.println(dt);
-		} catch (JsonSyntaxException e) {
-			e.printStackTrace();
-		} catch (TypeMismatchException e) {
+			URL worksheetFeedUrl = new URL("https://spreadsheets.google.com/feeds/worksheets/"+key+"/private/full");
+			WorksheetFeed worksheetFeed = service.getFeed(worksheetFeedUrl, WorksheetFeed.class);
+			
+			DataTable dt;
+			for (WorksheetEntry we : worksheetFeed.getEntries()){
+				System.out.println(we.getTitle()+": "+ we.getId().substring(we.getId().length()-3, we.getId().length()));
+				if ("drevo".equals(we.getTitle().getPlainText())){
+					dt = new Gson().fromJson(jsonDataTable(drevo), com.mayroro.util.DataTable.class).convert();
+					BatchCellUpdater.update(ssSvc, key, we.getId().substring(we.getId().length()-3, we.getId().length()), dt.getRows());
+				}
+				if ("maut".equals(we.getTitle().getPlainText())){
+					dt = new Gson().fromJson(jsonDataTable(maut), com.mayroro.util.DataTable.class).convert();
+					BatchCellUpdater.update(ssSvc, key, we.getId().substring(we.getId().length()-3, we.getId().length()), dt.getRows());
+				}
+//				if ("funkcije".equals(we.getTitle().getPlainText())){
+//					dt = new Gson().fromJson(jsonDataTable(funkcije), com.mayroro.util.DataTable.class).convert();
+//					BatchCellUpdater.update(ssSvc, key, we.getId().substring(we.getId().length()-3, we.getId().length()), dt.getRows());
+//				}
+			}
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		

@@ -21,7 +21,6 @@ public class DefaultInterceptor extends HandlerInterceptorAdapter {
 	@Override
 	public boolean preHandle(HttpServletRequest req, HttpServletResponse res, Object handler) throws Exception {
 		String reqURI = req.getRequestURI();
-		System.out.println(reqURI);
 		boolean login = true;
 		
 		// Ali gre za stran, ki jo je treba preskoèiti
