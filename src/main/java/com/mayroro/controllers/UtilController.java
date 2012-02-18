@@ -83,10 +83,10 @@ public class UtilController {
 					dt = new Gson().fromJson(jsonDataTable(maut), com.mayroro.util.DataTable.class).convert();
 					BatchCellUpdater.update(ssSvc, key, we.getId().substring(we.getId().length()-3, we.getId().length()), dt.getRows());
 				}
-//				if ("funkcije".equals(we.getTitle().getPlainText())){
-//					dt = new Gson().fromJson(jsonDataTable(funkcije), com.mayroro.util.DataTable.class).convert();
-//					BatchCellUpdater.update(ssSvc, key, we.getId().substring(we.getId().length()-3, we.getId().length()), dt.getRows());
-//				}
+				if ("funkcije".equals(we.getTitle().getPlainText())){
+					dt = new Gson().fromJson(jsonDataTable(funkcije), com.mayroro.util.DataTable.class).convert();
+					BatchCellUpdater.update(ssSvc, key, we.getId().substring(we.getId().length()-3, we.getId().length()), dt.getRows());
+				}
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

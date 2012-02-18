@@ -64,6 +64,7 @@ var spreadsheetHref = "${spreadsheet.htmlLink.href}";
 var spreadsheetKey = "${spreadsheet.key}";
 
 var plot;
+var nodeVal;
 
 var defaultCoords = [[1,0.5],[2,0.5],[3,0.5],[4, 0.5],[5, 0.5],[6, 0.5],[7, 0.5],[8, 0.5],[9, 0.5],[10, 0.5],[11, 0.5],[12, 0.5],[13, 0.5],[14, 0.5],[15, 0.5],[16, 0.5],[17, 0.5],[18, 0.5],[19, 0.5],[20, 0.5]];
 
@@ -218,10 +219,9 @@ function initUtilityGraph(name, pointCoords, min, max){
 			if(name == functionData.getColumnLabel(j)){
 				
 				for(k = 0; k < 20; k++){
-					functionData.setCell(k + 1, j, coords[k][0]);
-					functionData.setCell(k + 1, j + 1, coords[k][1]);
+					functionData.setCell(k + 1, j, parseInt(coords[k][0]));
+					functionData.setCell(k + 1, j + 1, parseFloat(coords[k][1]));
 				}
-				
 				break;
 			}
 		}
@@ -278,24 +278,55 @@ function _getCurrentNodeIndex(){
 
 /* triggeri */
 $(".addModelNode").live("click", function(){
-	data.addRow(['<input type="text" value="'+(newNodeId)+'" nodeid="'+(newNodeId)+'"/>', currentNode, 0]);
+	data.addRow(['<input type="text" value="'+(newNodeId)+'" nodeid="'+(newNodeId)+'"/>', currentNode, "0"]);
 	mautModel.draw(data, {allowHtml:true});
 	mautModel.setSelection();
 	hideToolbar();
 	
-	_node = new GraphData(newNodeId, newNodeId, defaultCoords, 1, 20);
+	min = 1;
+	max = 20;
+	
+	_node = new GraphData(newNodeId, newNodeId, defaultCoords, min, max);
 	nodesData[nodesData.length] = _node; 
 	
 	nodesIds[nodesIds.length] = newNodeId;
+	
+	functionData.addColumn("string", ""+newNodeId);
+	functionData.addColumn("string", "");
+	
+	j = functionData.getNumberOfColumns() - 1;
+	
+	functionData.setCell(0, j, min);
+	functionData.setCell(0, j+1, max);
+
+	for(k = 0; k < 20; k++){
+		functionData.setCell(k + 1, j, parseInt(defaultCoords[k][0]));
+		functionData.setCell(k + 1, j + 1, parseFloat(defaultCoords[k][1]));
+	}	
+	
+	tableData.addRow();
+	tableData.setCell(tableData.getNumberOfRows() - 1, 0, ""+newNodeId);
 	
 	newNodeId++;
   
 });
 
 $(".deleteModelNode").live("click", function(){
+	
+	name = $(currentNodeObject).children("input").attr("value");
 	data.removeRow(nodeRowIndex);
 	mautModel.draw(data, {allowHtml:true});
 	mautModel.setSelection();
+	
+	for(i = 0; i < tableData.getNumberOfRows(); i++){
+		_s = tableData.getValue(i,0);
+		if(name == _s){
+			tableData.removeRow(i);
+			break;
+		}
+	}
+	
+	nodesData.splice(_getNodeIndex(),1);
 	
 	hideToolbar();
   
@@ -309,19 +340,12 @@ $(".functionModelNode").live("click", function(){
 
 
 /*  					*/
-var nodeVal;
 
 $(".google-visualization-orgchart-node input").live("focusin", function(){
 	nodeVal = $(this).attr("value");
 });
 
-$(".google-visualization-orgchart-node input").live("focusout", function(){
-	_val = $(this).attr("value");
-	
-	n = _getNodeIndex();
-	//alert(currentNodeIndex);
-	//alert(nodesData[currentNodeIndex].name);
-	nodesData[n].name = _val;	
+function _renameDatatable(){
 	
 	for(i = 0; i < data.getNumberOfRows(); i++){
 		
@@ -333,8 +357,45 @@ $(".google-visualization-orgchart-node input").live("focusout", function(){
 				data.setCell(i,j,_d);
 			}
 		}
-		
 	}
+}
+
+function _renameFunctionDatatable(){
+	
+	for(j = 0; j < functionData.getNumberOfColumns(); j = j + 2){
+		_s = functionData.getValue(0,j);
+		
+		if(_s.indexOf(nodeVal) >= 0){
+			_d = _s.replace(nodeVal, _val);
+			functionData.setCell(0,j,_d);
+		}
+	}
+
+}
+
+function _renameTableDatatable(){
+	
+	for(j = 0; j < tableData.getNumberOfColumns(); j++){
+		_s = tableData.getValue(j,0);
+		
+		if(_s.indexOf(nodeVal) >= 0){
+			_d = _s.replace(nodeVal, _val);
+			functionData.setCell(j,0,_d);
+		}
+	}
+
+}
+
+$(".google-visualization-orgchart-node input").live("focusout", function(){
+	_val = $(this).attr("value");
+	
+	n = _getNodeIndex();
+	nodesData[n].name = _val;	
+	
+	_renameDatatable();
+	_renameFunctionDatatable();
+	_renameTableDatatable();
+	
 	mautModel.draw(data, {allowHtml:true});
 	mautModel.setSelection();
 	
@@ -456,7 +517,7 @@ function functionDataResponse(response) {
 
 function drawVisualization() {
   var query = new google.visualization.Query(
-  		spreadsheetHref + '&sheet=drevo');
+  		spreadsheetHref + '&sheet=drevo&headers=1');
   query.send(handleQueryResponse);
 }
 
