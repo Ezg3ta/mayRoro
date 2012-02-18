@@ -74,18 +74,17 @@ public class UtilController {
 			
 			DataTable dt;
 			for (WorksheetEntry we : worksheetFeed.getEntries()){
-				System.out.println(we.getTitle()+": "+ we.getId().substring(we.getId().length()-3, we.getId().length()));
 				if ("drevo".equals(we.getTitle().getPlainText())){
 					dt = new Gson().fromJson(jsonDataTable(drevo), com.mayroro.util.DataTable.class).convert();
-					BatchCellUpdater.update(ssSvc, key, we.getId().substring(we.getId().length()-3, we.getId().length()), dt.getRows());
+					BatchCellUpdater.update(ssSvc, key, we.getId().substring(we.getId().length()-3, we.getId().length()), dt);
 				}
 				if ("maut".equals(we.getTitle().getPlainText())){
 					dt = new Gson().fromJson(jsonDataTable(maut), com.mayroro.util.DataTable.class).convert();
-					BatchCellUpdater.update(ssSvc, key, we.getId().substring(we.getId().length()-3, we.getId().length()), dt.getRows());
+					BatchCellUpdater.update(ssSvc, key, we.getId().substring(we.getId().length()-3, we.getId().length()), dt);
 				}
 				if ("funkcije".equals(we.getTitle().getPlainText())){
 					dt = new Gson().fromJson(jsonDataTable(funkcije), com.mayroro.util.DataTable.class).convert();
-					BatchCellUpdater.update(ssSvc, key, we.getId().substring(we.getId().length()-3, we.getId().length()), dt.getRows());
+					BatchCellUpdater.update(ssSvc, key, we.getId().substring(we.getId().length()-3, we.getId().length()), dt);
 				}
 			}
 		} catch (Exception e) {

@@ -152,7 +152,7 @@ public class GUIController {
 			System.out.println("Title: "+spreadsheet.getTitle().getPlainText());
 			
 			for (WorksheetEntry we : spreadsheet.getWorksheets()){
-				System.out.println(we.getTitle()+": "+we.getId());
+				System.out.println(we.getTitle().getPlainText()+": "+we.getId());
 			}
 			
 			spreadsheet.setTitle(new PlainTextConstruct(spreadsheet.getTitle().getPlainText().substring(ConstFunc.SPREADSHEET_PREFIX.length())));

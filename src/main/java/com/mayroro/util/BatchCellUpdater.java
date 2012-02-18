@@ -11,6 +11,8 @@ import com.google.gdata.data.spreadsheet.CellFeed;
 import com.google.gdata.util.AuthenticationException;
 import com.google.gdata.util.ServiceException;
 import com.google.visualization.datasource.datatable.TableRow;
+import com.google.visualization.datasource.datatable.DataTable;
+import com.google.visualization.datasource.datatable.ColumnDescription;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -41,15 +43,24 @@ public class BatchCellUpdater {
 		}
 	}
 
-	public static void update(SpreadsheetService ssSvc, String key, String worksheetId, List<TableRow> rows) throws AuthenticationException, MalformedURLException, IOException, ServiceException {
+	public static void update(SpreadsheetService ssSvc, String key, String worksheetId, DataTable dt) throws AuthenticationException, MalformedURLException, IOException, ServiceException {
 		ssSvc.setProtocolVersion(SpreadsheetService.Versions.V1);
 		FeedURLFactory urlFactory = FeedURLFactory.getDefault();
 		URL cellFeedUrl = urlFactory.getCellFeedUrl(key, worksheetId, "private", "full");
 		CellFeed cellFeed = ssSvc.getFeed(cellFeedUrl, CellFeed.class);
-
+		
+		List<TableRow> rows = dt.getRows();
+		
+		TableRow header = new TableRow();
+		for (ColumnDescription cd : dt.getColumnDescriptions()){
+			header.addCell(cd.getLabel());
+		}
+		rows.add(0, header);
+		
 		// Build list of cell addresses to be filled in
 		List<CellAddress> cellAddrs = new ArrayList<CellAddress>();
-		for (int row = 1; row <= rows.size(); ++row) {
+		for (int row = 2; row <= rows.size(); ++row) {
+			
 			for (int col = 1; col <= rows.get(0).getCells().size(); ++col) {
 				cellAddrs.add(new CellAddress(row, col));
 			}
@@ -63,8 +74,10 @@ public class BatchCellUpdater {
 		batchRequest.setId(cellFeedUrl.toString());
 		for (CellAddress cellAddr : cellAddrs) {
 			CellEntry batchEntry = new CellEntry(cellEntries.get(cellAddr.idString));
-			
-			batchEntry.changeInputValueLocal(rows.get(cellAddr.row-1).getCell(cellAddr.col-1).getValue().toString());
+			if(rows.get(cellAddr.row-1).getCell(cellAddr.col-1).getFormattedValue() == null)
+				batchEntry.changeInputValueLocal(rows.get(cellAddr.row-1).getCell(cellAddr.col-1).getValue().toString());
+			else
+				batchEntry.changeInputValueLocal(rows.get(cellAddr.row-1).getCell(cellAddr.col-1).getFormattedValue().toString());
 			BatchUtils.setBatchId(batchEntry, cellAddr.idString);
 			BatchUtils.setBatchOperationType(batchEntry, BatchOperationType.UPDATE);
 			batchRequest.getEntries().add(batchEntry);
