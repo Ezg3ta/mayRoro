@@ -1,9 +1,7 @@
 package com.mayroro.controllers;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -19,12 +17,9 @@ import com.google.gdata.data.PlainTextConstruct;
 import com.google.gdata.data.docs.SpreadsheetEntry;
 import com.google.gdata.data.spreadsheet.WorksheetEntry;
 import com.google.gdata.data.spreadsheet.WorksheetFeed;
-import com.google.gdata.util.AuthenticationException;
 import com.google.gdata.util.ServiceException;
 import com.google.gson.Gson;
-import com.google.gson.JsonSyntaxException;
-import com.google.visualization.datasource.base.TypeMismatchException;
-import com.google.visualization.datasource.datatable.DataTable;
+import com.mayroro.util.DataTable;
 import com.mayroro.util.BatchCellUpdater;
 import com.mayroro.util.ConstFunc;
 import com.mayroro.util.UserInfo;
@@ -73,17 +68,19 @@ public class UtilController {
 			WorksheetFeed worksheetFeed = service.getFeed(worksheetFeedUrl, WorksheetFeed.class);
 			
 			DataTable dt;
+			Gson gson = new Gson();
 			for (WorksheetEntry we : worksheetFeed.getEntries()){
+				dt = new DataTable();
 				if ("drevo".equals(we.getTitle().getPlainText())){
-					dt = new Gson().fromJson(jsonDataTable(drevo), com.mayroro.util.DataTable.class).convert();
+					dt = gson.fromJson(drevo, com.mayroro.util.DataTable.class);
 					BatchCellUpdater.update(ssSvc, key, we.getId().substring(we.getId().length()-3, we.getId().length()), dt);
 				}
 				if ("maut".equals(we.getTitle().getPlainText())){
-					dt = new Gson().fromJson(jsonDataTable(maut), com.mayroro.util.DataTable.class).convert();
+					dt = gson.fromJson(maut, com.mayroro.util.DataTable.class);
 					BatchCellUpdater.update(ssSvc, key, we.getId().substring(we.getId().length()-3, we.getId().length()), dt);
 				}
 				if ("funkcije".equals(we.getTitle().getPlainText())){
-					dt = new Gson().fromJson(jsonDataTable(funkcije), com.mayroro.util.DataTable.class).convert();
+					dt = gson.fromJson(funkcije, com.mayroro.util.DataTable.class);
 					BatchCellUpdater.update(ssSvc, key, we.getId().substring(we.getId().length()-3, we.getId().length()), dt);
 				}
 			}
@@ -94,14 +91,17 @@ public class UtilController {
 		return "ok";
 	}
 	
-	private static String jsonDataTable(String json){
-		String converted = json.replaceFirst("cols", "columns");
-		converted = converted.replaceAll("\"type\":\"string\"", "\"type\":\"TEXT\"");
-		converted = converted.replaceAll("\"type\":\"number\"", "\"type\":\"NUMBER\"");
-		converted = converted.replaceAll("\\{\"c\":\\[", "\\{\"cells\":\\[");
-		converted = converted.replaceAll("\\{\"v\":", "\\{\"value\":");
-		converted = converted.replaceAll("\"f\":", "\"formattedValue\":");
-		return converted;
+	@RequestMapping(value="/result")
+	public @ResponseBody String result(@RequestParam("drevo") String drevo, @RequestParam("funkcije") String funkcije, @RequestParam("maut") String maut) {
+		Gson gson = new Gson();
+		
+		DataTable dtDrevo = gson.fromJson(drevo, com.mayroro.util.DataTable.class);
+		DataTable dtFunkcije = gson.fromJson(drevo, com.mayroro.util.DataTable.class);
+		DataTable dtMaut = gson.fromJson(drevo, com.mayroro.util.DataTable.class);
+		
+		
+		
+		return null;
 	}
 	
 	private SpreadsheetEntry createNewSpreadsheet(DocsService service, String title) throws IOException, ServiceException {

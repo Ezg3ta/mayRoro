@@ -1,144 +1,75 @@
 package com.mayroro.controllers;
 
-import java.io.IOException;
-import java.lang.reflect.Type;
-
-import com.google.api.client.http.HttpTransport;
-import com.google.visualization.datasource.base.TypeMismatchException;
-import com.google.visualization.datasource.datatable.DataTable;
-import com.google.api.client.http.javanet.NetHttpTransport;
-import com.google.api.client.json.JsonFactory;
-import com.google.api.client.json.JsonParser;
-import com.google.api.client.json.JsonToken;
-import com.google.api.client.json.gson.GsonFactory;
-import com.google.api.client.json.jackson.JacksonFactory;
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.InstanceCreator;
-import com.google.gson.JsonSyntaxException;
+import com.mayroro.util.ColumnDescription;
+import com.mayroro.util.DataTable;
+import com.mayroro.util.tree.*;
 
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-
-@Controller
-@RequestMapping("test")
 public class TestController {
-	private static final String SCOPE = "https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email http://docs.google.com/feeds/ http://spreadsheets.google.com/feeds/";
-	private static final String CALLBACK_URL = "http://localhost:8080/mayRoro/home";
-	private static final HttpTransport TRANSPORT = new NetHttpTransport();
-	private static final JsonFactory JSON_FACTORY = new JacksonFactory();
-
-	// FILL THESE IN WITH YOUR VALUES FROM THE API CONSOLE
-	private static final String CLIENT_ID = "109101120972.apps.googleusercontent.com";
-	private static final String CLIENT_SECRET = "qGVNHCEhrkt_O1Lqos5Qe2XH";
-
-	private static String drevo = "{\"cols\":[{\"id\":\"A\",\"label\":\"\",\"type\":\"string\",\"pattern\":\"\"},{\"id\":\"B\",\"label\":\"\",\"type\":\"string\",\"pattern\":\"\"},{\"id\":\"C\",\"label\":\"\",\"type\":\"number\",\"pattern\":\"#0.###############\"}],\"rows\":[{\"c\":[{\"v\":\"majer\"},{\"v\":\"mama\"},{\"v\":0.4,\"f\":\"0,4\"}]},{\"c\":[{\"v\":\"<input type=\\\"text\\\" value=\\\"mama\\\"  nodeId=\\\"0\\\"/>\"},{\"v\":\"<input type=\\\"text\\\" value=\\\"doer\\\"  nodeId=\\\"2\\\"/>\"},{\"v\":0.2,\"f\":\"0,2\"}]},{\"c\":[{\"v\":\"<input type=\\\"text\\\" value=\\\"gad\\\"  nodeId=\\\"3\\\"/>\"},{\"v\":\"<input type=\\\"text\\\" value=\\\"mama\\\"  nodeId=\\\"0\\\"/>\"},{\"v\":0.3,\"f\":\"0,3\"}]},{\"c\":[{\"v\":\"<input type=\\\"text\\\" value=\\\"roro\\\"  nodeId=\\\"4\\\"/>\"},{\"v\":\"<input type=\\\"text\\\" value=\\\"mama\\\"  nodeId=\\\"0\\\"/>\"},{\"v\":0.34,\"f\":\"0,34\"}]},{\"c\":[{\"v\":\"<input type=\\\"text\\\" value=\\\"num\\\"  nodeId=\\\"5\\\"/>\"},{\"v\":\"<input type=\\\"text\\\" value=\\\"doer\\\"  nodeId=\\\"2\\\"/>\"},{\"v\":0.23,\"f\":\"0,23\"}]},{\"c\":[{\"v\":\"<input type=\\\"text\\\" value=\\\"doer\\\"  nodeId=\\\"2\\\"/>\"},{\"v\":\"\"},{\"v\":null}]}],\"p\":null}";
+	private static String drevo = "{\"cols\":[{\"id\":\"A\",\"label\":\"child\",\"type\":\"string\",\"pattern\":\"\"},{\"id\":\"B\",\"label\":\"parent\",\"type\":\"string\",\"pattern\":\"\"},{\"id\":\"C\",\"label\":\"\",\"type\":\"string\",\"pattern\":\"\"}],\"rows\":[{\"c\":[{\"v\":\"majer\"},{\"v\":\"mama\"},{\"v\":\"0.4\"}]},{\"c\":[{\"v\":\"mama\"},{\"v\":\"doer\"},{\"v\":\"0.2\"}]},{\"c\":[{\"v\":\"gad\"},{\"v\":\"mama\"},{\"v\":\"0.3\"}]},{\"c\":[{\"v\":\"roro\"},{\"v\":\"mama\"},{\"v\":\"0.34\"}]},{\"c\":[{\"v\":\"num\"},{\"v\":\"doer\"},{\"v\":\"0.23\"}]},{\"c\":[{\"v\":\"doer\"},{\"v\":\"\"},{\"v\":\"\"}]},{\"c\":[{\"v\":\"\"},{\"v\":\"\"},{\"v\":\"\"}]},{\"c\":[{\"v\":\"\"},{\"v\":\"\"},{\"v\":\"\"}]},{\"c\":[{\"v\":\"\"},{\"v\":\"\"},{\"v\":\"\"}]},{\"c\":[{\"v\":\"\"},{\"v\":\"\"},{\"v\":\"\"}]},{\"c\":[{\"v\":\"\"},{\"v\":\"\"},{\"v\":\"\"}]},{\"c\":[{\"v\":\"\"},{\"v\":\"\"},{\"v\":\"\"}]},{\"c\":[{\"v\":\"\"},{\"v\":\"\"},{\"v\":\"\"}]},{\"c\":[{\"v\":\"\"},{\"v\":\"\"},{\"v\":\"\"}]},{\"c\":[{\"v\":\"\"},{\"v\":\"\"},{\"v\":\"\"}]},{\"c\":[{\"v\":\"\"},{\"v\":\"\"},{\"v\":\"\"}]},{\"c\":[{\"v\":\"\"},{\"v\":\"\"},{\"v\":\"\"}]},{\"c\":[{\"v\":\"\"},{\"v\":\"\"},{\"v\":\"\"}]},{\"c\":[{\"v\":\"\"},{\"v\":\"\"},{\"v\":\"\"}]},{\"c\":[{\"v\":\"\"},{\"v\":\"\"},{\"v\":\"\"}]},{\"c\":[{\"v\":\"\"},{\"v\":\"\"},{\"v\":\"\"}]},{\"c\":[{\"v\":\"\"},{\"v\":\"\"},{\"v\":\"\"}]},{\"c\":[{\"v\":\"\"},{\"v\":\"\"},{\"v\":\"\"}]},{\"c\":[{\"v\":\"\"},{\"v\":\"\"},{\"v\":\"\"}]},{\"c\":[{\"v\":\"\"},{\"v\":\"\"},{\"v\":\"\"}]},{\"c\":[{\"v\":\"\"},{\"v\":\"\"},{\"v\":\"\"}]},{\"c\":[{\"v\":\"\"},{\"v\":\"\"},{\"v\":\"\"}]},{\"c\":[{\"v\":\"\"},{\"v\":\"\"},{\"v\":\"\"}]},{\"c\":[{\"v\":\"\"},{\"v\":\"\"},{\"v\":\"\"}]},{\"c\":[{\"v\":\"\"},{\"v\":\"\"},{\"v\":\"\"}]},{\"c\":[{\"v\":\"\"},{\"v\":\"\"},{\"v\":\"\"}]},{\"c\":[{\"v\":\"\"},{\"v\":\"\"},{\"v\":\"\"}]},{\"c\":[{\"v\":\"\"},{\"v\":\"\"},{\"v\":\"\"}]},{\"c\":[{\"v\":\"\"},{\"v\":\"\"},{\"v\":\"\"}]},{\"c\":[{\"v\":\"\"},{\"v\":\"\"},{\"v\":\"\"}]},{\"c\":[{\"v\":\"\"},{\"v\":\"\"},{\"v\":\"\"}]},{\"c\":[{\"v\":\"\"},{\"v\":\"\"},{\"v\":\"\"}]},{\"c\":[{\"v\":\"\"},{\"v\":\"\"},{\"v\":\"\"}]},{\"c\":[{\"v\":\"\"},{\"v\":\"\"},{\"v\":\"\"}]},{\"c\":[{\"v\":\"\"},{\"v\":\"\"},{\"v\":\"\"}]},{\"c\":[{\"v\":\"\"},{\"v\":\"\"},{\"v\":\"\"}]},{\"c\":[{\"v\":\"\"},{\"v\":\"\"},{\"v\":\"\"}]},{\"c\":[{\"v\":\"\"},{\"v\":\"\"},{\"v\":\"\"}]},{\"c\":[{\"v\":\"\"},{\"v\":\"\"},{\"v\":\"\"}]},{\"c\":[{\"v\":\"\"},{\"v\":\"\"},{\"v\":\"\"}]},{\"c\":[{\"v\":\"\"},{\"v\":\"\"},{\"v\":\"\"}]},{\"c\":[{\"v\":\"\"},{\"v\":\"\"},{\"v\":\"\"}]},{\"c\":[{\"v\":\"\"},{\"v\":\"\"},{\"v\":\"\"}]},{\"c\":[{\"v\":\"\"},{\"v\":\"\"},{\"v\":\"\"}]},{\"c\":[{\"v\":\"\"},{\"v\":\"\"},{\"v\":\"\"}]},{\"c\":[{\"v\":\"\"},{\"v\":\"\"},{\"v\":\"\"}]},{\"c\":[{\"v\":\"\"},{\"v\":\"\"},{\"v\":\"\"}]},{\"c\":[{\"v\":\"\"},{\"v\":\"\"},{\"v\":\"\"}]},{\"c\":[{\"v\":\"\"},{\"v\":\"\"},{\"v\":\"\"}]},{\"c\":[{\"v\":\"\"},{\"v\":\"\"},{\"v\":\"\"}]},{\"c\":[{\"v\":\"\"},{\"v\":\"\"},{\"v\":\"\"}]},{\"c\":[{\"v\":\"\"},{\"v\":\"\"},{\"v\":\"\"}]},{\"c\":[{\"v\":\"\"},{\"v\":\"\"},{\"v\":\"\"}]},{\"c\":[{\"v\":\"\"},{\"v\":\"\"},{\"v\":\"\"}]},{\"c\":[{\"v\":\"\"},{\"v\":\"\"},{\"v\":\"\"}]},{\"c\":[{\"v\":\"\"},{\"v\":\"\"},{\"v\":\"\"}]},{\"c\":[{\"v\":\"\"},{\"v\":\"\"},{\"v\":\"\"}]},{\"c\":[{\"v\":\"\"},{\"v\":\"\"},{\"v\":\"\"}]},{\"c\":[{\"v\":\"\"},{\"v\":\"\"},{\"v\":\"\"}]},{\"c\":[{\"v\":\"\"},{\"v\":\"\"},{\"v\":\"\"}]},{\"c\":[{\"v\":\"\"},{\"v\":\"\"},{\"v\":\"\"}]},{\"c\":[{\"v\":\"\"},{\"v\":\"\"},{\"v\":\"\"}]},{\"c\":[{\"v\":\"\"},{\"v\":\"\"},{\"v\":\"\"}]},{\"c\":[{\"v\":\"\"},{\"v\":\"\"},{\"v\":\"\"}]},{\"c\":[{\"v\":\"\"},{\"v\":\"\"},{\"v\":\"\"}]},{\"c\":[{\"v\":\"\"},{\"v\":\"\"},{\"v\":\"\"}]},{\"c\":[{\"v\":\"\"},{\"v\":\"\"},{\"v\":\"\"}]},{\"c\":[{\"v\":\"\"},{\"v\":\"\"},{\"v\":\"\"}]},{\"c\":[{\"v\":\"\"},{\"v\":\"\"},{\"v\":\"\"}]},{\"c\":[{\"v\":\"\"},{\"v\":\"\"},{\"v\":\"\"}]},{\"c\":[{\"v\":\"\"},{\"v\":\"\"},{\"v\":\"\"}]},{\"c\":[{\"v\":\"\"},{\"v\":\"\"},{\"v\":\"\"}]},{\"c\":[{\"v\":\"\"},{\"v\":\"\"},{\"v\":\"\"}]},{\"c\":[{\"v\":\"\"},{\"v\":\"\"},{\"v\":\"\"}]},{\"c\":[{\"v\":\"\"},{\"v\":\"\"},{\"v\":\"\"}]},{\"c\":[{\"v\":\"\"},{\"v\":\"\"},{\"v\":\"\"}]},{\"c\":[{\"v\":\"\"},{\"v\":\"\"},{\"v\":\"\"}]},{\"c\":[{\"v\":\"\"},{\"v\":\"\"},{\"v\":\"\"}]},{\"c\":[{\"v\":\"\"},{\"v\":\"\"},{\"v\":\"\"}]},{\"c\":[{\"v\":\"\"},{\"v\":\"\"},{\"v\":\"\"}]},{\"c\":[{\"v\":\"\"},{\"v\":\"\"},{\"v\":\"\"}]},{\"c\":[{\"v\":\"\"},{\"v\":\"\"},{\"v\":\"\"}]},{\"c\":[{\"v\":\"\"},{\"v\":\"\"},{\"v\":\"\"}]},{\"c\":[{\"v\":\"\"},{\"v\":\"\"},{\"v\":\"\"}]},{\"c\":[{\"v\":\"\"},{\"v\":\"\"},{\"v\":\"\"}]},{\"c\":[{\"v\":\"\"},{\"v\":\"\"},{\"v\":\"\"}]},{\"c\":[{\"v\":\"\"},{\"v\":\"\"},{\"v\":\"\"}]},{\"c\":[{\"v\":\"\"},{\"v\":\"\"},{\"v\":\"\"}]},{\"c\":[{\"v\":\"\"},{\"v\":\"\"},{\"v\":\"\"}]}],\"p\":null}";
+	private static String funkcije = "{\"cols\":[{\"id\":\"A\",\"label\":\"majer\",\"type\":\"number\",\"pattern\":\"#,##0.###############\"},{\"id\":\"B\",\"label\":\"\",\"type\":\"number\",\"pattern\":\"#,##0.###############\"},{\"id\":\"C\",\"label\":\"gad\",\"type\":\"number\",\"pattern\":\"#,##0.###############\"},{\"id\":\"D\",\"label\":\"\",\"type\":\"number\",\"pattern\":\"#,##0.###############\"},{\"id\":\"A\",\"label\":\"roro\",\"type\":\"number\",\"pattern\":\"#,##0.###############\"},{\"id\":\"B\",\"label\":\"\",\"type\":\"number\",\"pattern\":\"#,##0.###############\"}],\"rows\":[{\"c\":[{\"v\":10,\"f\":\"10\"},{\"v\":100,\"f\":\"100\"},{\"v\":20,\"f\":\"20\"},{\"v\":30,\"f\":\"30\"},{\"v\":20,\"f\":\"20\"},{\"v\":30,\"f\":\"30\"}]},{\"c\":[{\"v\":1,\"f\":\"1\"},{\"v\":1,\"f\":\"1\"},{\"v\":1,\"f\":\"1\"},{\"v\":1,\"f\":\"1\"},{\"v\":1,\"f\":\"1\"},{\"v\":1,\"f\":\"1\"}]},{\"c\":[{\"v\":2,\"f\":\"2\"},{\"v\":0.8,\"f\":\"0,8\"},{\"v\":2,\"f\":\"2\"},{\"v\":0.8,\"f\":\"0,8\"},{\"v\":2,\"f\":\"2\"},{\"v\":0.8,\"f\":\"0,8\"}]},{\"c\":[{\"v\":3,\"f\":\"3\"},{\"v\":0.65,\"f\":\"0,65\"},{\"v\":3,\"f\":\"3\"},{\"v\":0.65,\"f\":\"0,65\"},{\"v\":3,\"f\":\"3\"},{\"v\":0.65,\"f\":\"0,65\"}]},{\"c\":[{\"v\":4,\"f\":\"4\"},{\"v\":0.57,\"f\":\"0,57\"},{\"v\":4,\"f\":\"4\"},{\"v\":0.57,\"f\":\"0,57\"},{\"v\":4,\"f\":\"4\"},{\"v\":0.57,\"f\":\"0,57\"}]},{\"c\":[{\"v\":5,\"f\":\"5\"},{\"v\":0.45,\"f\":\"0,45\"},{\"v\":5,\"f\":\"5\"},{\"v\":0.45,\"f\":\"0,45\"},{\"v\":5,\"f\":\"5\"},{\"v\":0.45,\"f\":\"0,45\"}]},{\"c\":[{\"v\":6,\"f\":\"6\"},{\"v\":0.39,\"f\":\"0,39\"},{\"v\":6,\"f\":\"6\"},{\"v\":0.39,\"f\":\"0,39\"},{\"v\":6,\"f\":\"6\"},{\"v\":0.39,\"f\":\"0,39\"}]},{\"c\":[{\"v\":7,\"f\":\"7\"},{\"v\":0.33,\"f\":\"0,33\"},{\"v\":7,\"f\":\"7\"},{\"v\":0.33,\"f\":\"0,33\"},{\"v\":7,\"f\":\"7\"},{\"v\":0.33,\"f\":\"0,33\"}]},{\"c\":[{\"v\":8,\"f\":\"8\"},{\"v\":0.29,\"f\":\"0,29\"},{\"v\":8,\"f\":\"8\"},{\"v\":0.29,\"f\":\"0,29\"},{\"v\":8,\"f\":\"8\"},{\"v\":0.29,\"f\":\"0,29\"}]},{\"c\":[{\"v\":9,\"f\":\"9\"},{\"v\":0.15,\"f\":\"0,15\"},{\"v\":9,\"f\":\"9\"},{\"v\":0.15,\"f\":\"0,15\"},{\"v\":9,\"f\":\"9\"},{\"v\":0.15,\"f\":\"0,15\"}]},{\"c\":[{\"v\":10,\"f\":\"10\"},{\"v\":0.7,\"f\":\"0,7\"},{\"v\":10,\"f\":\"10\"},{\"v\":0.7,\"f\":\"0,7\"},{\"v\":10,\"f\":\"10\"},{\"v\":0.7,\"f\":\"0,7\"}]},{\"c\":[{\"v\":11,\"f\":\"11\"},{\"v\":1,\"f\":\"1\"},{\"v\":11,\"f\":\"11\"},{\"v\":1,\"f\":\"1\"},{\"v\":11,\"f\":\"11\"},{\"v\":1,\"f\":\"1\"}]},{\"c\":[{\"v\":12,\"f\":\"12\"},{\"v\":0.8,\"f\":\"0,8\"},{\"v\":12,\"f\":\"12\"},{\"v\":0.8,\"f\":\"0,8\"},{\"v\":12,\"f\":\"12\"},{\"v\":0.8,\"f\":\"0,8\"}]},{\"c\":[{\"v\":13,\"f\":\"13\"},{\"v\":0.65,\"f\":\"0,65\"},{\"v\":13,\"f\":\"13\"},{\"v\":0.65,\"f\":\"0,65\"},{\"v\":13,\"f\":\"13\"},{\"v\":0.65,\"f\":\"0,65\"}]},{\"c\":[{\"v\":14,\"f\":\"14\"},{\"v\":0.57,\"f\":\"0,57\"},{\"v\":14,\"f\":\"14\"},{\"v\":0.57,\"f\":\"0,57\"},{\"v\":14,\"f\":\"14\"},{\"v\":0.57,\"f\":\"0,57\"}]},{\"c\":[{\"v\":15,\"f\":\"15\"},{\"v\":0.45,\"f\":\"0,45\"},{\"v\":15,\"f\":\"15\"},{\"v\":0.45,\"f\":\"0,45\"},{\"v\":15,\"f\":\"15\"},{\"v\":0.45,\"f\":\"0,45\"}]},{\"c\":[{\"v\":16,\"f\":\"16\"},{\"v\":0.39,\"f\":\"0,39\"},{\"v\":16,\"f\":\"16\"},{\"v\":0.39,\"f\":\"0,39\"},{\"v\":16,\"f\":\"16\"},{\"v\":0.39,\"f\":\"0,39\"}]},{\"c\":[{\"v\":17,\"f\":\"17\"},{\"v\":0.33,\"f\":\"0,33\"},{\"v\":17,\"f\":\"17\"},{\"v\":0.33,\"f\":\"0,33\"},{\"v\":17,\"f\":\"17\"},{\"v\":0.33,\"f\":\"0,33\"}]},{\"c\":[{\"v\":18,\"f\":\"18\"},{\"v\":0.29,\"f\":\"0,29\"},{\"v\":18,\"f\":\"18\"},{\"v\":0.29,\"f\":\"0,29\"},{\"v\":18,\"f\":\"18\"},{\"v\":0.29,\"f\":\"0,29\"}]},{\"c\":[{\"v\":19,\"f\":\"19\"},{\"v\":0.15,\"f\":\"0,15\"},{\"v\":19,\"f\":\"19\"},{\"v\":0.15,\"f\":\"0,15\"},{\"v\":19,\"f\":\"19\"},{\"v\":0.15,\"f\":\"0,15\"}]},{\"c\":[{\"v\":20,\"f\":\"20\"},{\"v\":0.7,\"f\":\"0,7\"},{\"v\":20,\"f\":\"20\"},{\"v\":0.7,\"f\":\"0,7\"},{\"v\":20,\"f\":\"20\"},{\"v\":0.7,\"f\":\"0,7\"}]}],\"p\":null}";
+	private static String maut = "{\"cols\":[{\"id\":\"A\",\"label\":\"atribut\",\"type\":\"string\",\"pattern\":\"\"},{\"id\":\"B\",\"label\":\"bmw\",\"type\":\"string\",\"pattern\":\"\"},{\"id\":\"C\",\"label\":\"vw\",\"type\":\"string\",\"pattern\":\"\"},{\"id\":\"D\",\"label\":\"ford\",\"type\":\"string\",\"pattern\":\"\"}],\"rows\":[{\"c\":[{\"v\":\"num\"},{\"v\":\"15\"},{\"v\":\"12\"},{\"v\":\"12\"}]},{\"c\":[{\"v\":\"majer\"},{\"v\":\"23\"},{\"v\":\"66\"},{\"v\":\"99\"}]},{\"c\":[{\"v\":\"gad\"},{\"v\":\"21\"},{\"v\":\"30\"},{\"v\":\"28,3\"}]},{\"c\":[{\"v\":\"roro\"},{\"v\":\"20,3\"},{\"v\":\"29,96\"},{\"v\":\"27,87\"}]}],\"p\":null}";
 	
-	@RequestMapping("")
 	public static void main(String[] args) {
-//		DataTable sample = new DataTable();
-//		sample.addColumn(new ColumnDescription("A", ValueType.TEXT, ""));
-//		sample.addColumn(new ColumnDescription("B", ValueType.TEXT, ""));
-//		try {
-//			sample.addRow(new TableRow());
-//			sample.addRow(new TableRow());
-//			sample.setCell(0, 0, new TableCell("vsebina"));
-//			sample.setCell(0, 1, new TableCell("0,1"));
-//			sample.setCell(1, 0, new TableCell("ena,nula"));
-//			sample.setCell(1, 1, new TableCell("1,1"));
-//		} catch (TypeMismatchException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
+//		Tree drevo = new Tree("doer");
+//		TreeNode doer = drevo.getRoot();
+//		TreeNode mama = doer.addChild("mama", 0.4);
+//		TreeNode ata = doer.addChild("ata", 0.9);
 //		
-//		System.out.println("Col: "+sample.getNumberOfColumns());
-//		System.out.println("Row: "+sample.getNumberOfRows());
-//		System.out.println("Cell (0,0): "+sample.getCell(0,0).getValue());
-//		
-//		System.out.println(sample);
-//		System.out.println(new Gson().toJson(sample));
+//		mama.addChild("neki en", 0.5);
+//		TreeNode majer = mama.addChild("majer", 0.68);
+//		majer.addChild("majerov ta mali");
+		
+//		System.out.println("Drevo: \n"+drevo);
 		
 		Gson gson = new Gson();
 		
-		DataTable dt;
-		try {
-			dt = gson.fromJson(jsonDataTable(drevo), com.mayroro.util.DataTable.class).convert();
-			System.out.println(dt.getRows().get(1).getCells().get(0).getValue());
-			System.out.println(dt);
-		} catch (JsonSyntaxException e) {
-			e.printStackTrace();
-		} catch (TypeMismatchException e) {
-			e.printStackTrace();
+		DataTable dtDrevo = gson.fromJson(drevo, com.mayroro.util.DataTable.class);
+		DataTable dtFunkcije = gson.fromJson(funkcije, com.mayroro.util.DataTable.class);
+		DataTable dtMaut = gson.fromJson(maut, com.mayroro.util.DataTable.class);
+		
+		ColumnDescription cd = new ColumnDescription();
+		cd.setId("G");
+		cd.setLabel("num");
+		cd.setType("NUMBER");
+		cd.setPattern("#,##0.###############");
+		
+		dtFunkcije.addCol(cd);
+		
+		cd = new ColumnDescription();
+		cd.setId("H");
+		cd.setLabel("");
+		cd.setType("NUMBER");
+		cd.setPattern("#,##0.###############");
+		
+		dtFunkcije.addCol(cd);
+		
+		dtFunkcije.getRows().get(0).addCell("10");
+		dtFunkcije.getRows().get(0).addCell("20");
+		
+		for (int i = 1; i<21; i++){
+			dtFunkcije.getRows().get(i).addCell(Integer.toString(i));
+			dtFunkcije.getRows().get(i).addCell("0.1");
 		}
 		
-//		jsonParser(new Gson().toJson(sample));
-//		System.out.println("------------------------------------------------------");
-//		jsonParser(drevo);
-	}
-	
-	private static String jsonDataTable(String json){
-		Gson gson = new Gson();
-		String converted = json.replaceFirst("cols", "columns");
-		converted = converted.replaceAll("\"type\":\"string\"", "\"type\":\"TEXT\"");
-		converted = converted.replaceAll("\"type\":\"number\"", "\"type\":\"NUMBER\"");
-		converted = converted.replaceAll("\\{\"c\":\\[", "\\{\"cells\":\\[");
-		converted = converted.replaceAll("\\{\"v\":", "\\{\"value\":");
-		converted = converted.replaceAll("\"f\":", "\"formattedValue\":");
-//		converted = converted.replaceAll("\\]\\},\\{\"cells\":\\[", "\\}\\]\\},\\{\"cells\":\\[");
-//		converted = converted.replaceAll("\\]\\}\\],\"p\":", "\\}\\]\\}\\],\"p\":");
-//		converted = converted.replaceAll("\\},\\{\"v\":", "\\}\\},\\{\"value\":\\{\"value\":");
-//		converted = converted.replaceAll("\\{\"v\":", "\\{\"value\":\\{\"value\":");
-		System.out.println("1: "+converted);
-		return converted;
-	}
-	
-	private static void jsonParser(String json){
-		GsonFactory gson = new GsonFactory();
-		JsonParser jp = gson.createJsonParser(json);
-		try {
-			while(jp.nextToken() != null){
-				System.out.println(jp.getCurrentToken()+"\t"+jp.getText());
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		
+		dtDrevo.removeEmptyRows();
+		
+		System.out.println(dtFunkcije.colsToString());
+		System.out.println(dtFunkcije);
+		System.out.println("---------------");
+		System.out.println(dtMaut);
+		System.out.println("---------------");
+		
+		Tree drevoTree = new Tree(dtDrevo);
+		System.out.println(drevoTree);
+		
+		drevoTree.setMautFunction(dtFunkcije);
+		
+		drevoTree.setData(dtMaut, 1);
+		System.out.println(drevoTree);
+		
+		System.out.println(drevoTree.calculateValue());
 	}
 }
-
-//GoogleOAuthParameters oauthParameters = new GoogleOAuthParameters();
-//oauthParameters.setOAuthConsumerKey(CLIENT_ID);
-//oauthParameters.setOAuthConsumerSecret(CLIENT_SECRET);
-//oauthParameters.setScope(SCOPE);
-//oauthParameters.setOAuthCallback(CALLBACK_URL);
-//
-//GoogleOAuthHelper oauthHelper = new GoogleOAuthHelper(new OAuthHmacSha1Signer());
-//try {
-//	oauthHelper.getUnauthorizedRequestToken(oauthParameters);
-//} catch (OAuthException e) {
-//	e.printStackTrace();
-//}
-//
-//String approvalPageUrl = oauthHelper.createUserAuthorizationUrl(oauthParameters);
-//System.out.println(approvalPageUrl);
-
-
-
-// @Controller
-// 
-// @RequestMapping("/test") public class UrlShortenerTest {
-// 
-// @RequestMapping("") public static void here() { try { DocsService service =
-// new DocsService("Document List Demo");
-// service.setUserCredentials("lovro.mazgon@gmail.com", "GESLO");
-// 
-// URL documentListFeedUrl = new
-// URL("https://docs.google.com/feeds/default/private/full");
-// 
-// DocumentListFeed feed = service.getFeed(documentListFeedUrl,
-// DocumentListFeed.class);
-// 
-// for (DocumentListEntry entry : feed.getEntries()){
-// System.out.println(entry.getType()+": "+entry.getTitle().getPlainText()); } }
-// catch (Exception e){ System.err.println("Exception: " + e.getMessage()); } }
-// }
  

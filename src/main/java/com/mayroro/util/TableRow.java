@@ -6,26 +6,32 @@ import java.util.List;
 import com.google.visualization.datasource.datatable.value.ValueType;
 
 public class TableRow {
-	private List<TableCell> cells;
+	private List<TableCell> c;
 	
 	public TableRow(){
-		cells = new ArrayList<TableCell>();
+		c = new ArrayList<TableCell>();
 	}
 
-	public List<TableCell> getCells() {
-		return cells;
+	public List<TableCell> getC() {
+		return c;
 	}
-	public void setCells(List<TableCell> cells) {
-		this.cells = cells;
+	public void setC(List<TableCell> cells) {
+		this.c = cells;
+	}
+	public TableCell getCell(int col){
+		return c.get(col);
 	}
 	public void addCell(TableCell cell) {
-	    cells.add(cell);
+	    c.add(cell);
+	}
+	public void addCell(String value){
+		c.add(new TableCell(value));
 	}
 	
 	public com.google.visualization.datasource.datatable.TableRow convert(List<ValueType> columnTypes){
 		com.google.visualization.datasource.datatable.TableRow converted = new com.google.visualization.datasource.datatable.TableRow();
 		int i = 0;
-		for (TableCell tc : cells){
+		for (TableCell tc : c){
 			converted.addCell(tc.convert(columnTypes.get(i)));
 			i++;
 		}

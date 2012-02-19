@@ -10,9 +10,6 @@ import com.google.gdata.data.spreadsheet.CellEntry;
 import com.google.gdata.data.spreadsheet.CellFeed;
 import com.google.gdata.util.AuthenticationException;
 import com.google.gdata.util.ServiceException;
-import com.google.visualization.datasource.datatable.TableRow;
-import com.google.visualization.datasource.datatable.DataTable;
-import com.google.visualization.datasource.datatable.ColumnDescription;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -52,7 +49,7 @@ public class BatchCellUpdater {
 		List<TableRow> rows = dt.getRows();
 		
 		TableRow header = new TableRow();
-		for (ColumnDescription cd : dt.getColumnDescriptions()){
+		for (ColumnDescription cd : dt.getCols()){
 			header.addCell(cd.getLabel());
 		}
 		rows.add(0, header);
@@ -61,7 +58,7 @@ public class BatchCellUpdater {
 		List<CellAddress> cellAddrs = new ArrayList<CellAddress>();
 		for (int row = 2; row <= rows.size(); ++row) {
 			
-			for (int col = 1; col <= rows.get(0).getCells().size(); ++col) {
+			for (int col = 1; col <= rows.get(0).getC().size(); ++col) {
 				cellAddrs.add(new CellAddress(row, col));
 			}
 		}
@@ -74,10 +71,10 @@ public class BatchCellUpdater {
 		batchRequest.setId(cellFeedUrl.toString());
 		for (CellAddress cellAddr : cellAddrs) {
 			CellEntry batchEntry = new CellEntry(cellEntries.get(cellAddr.idString));
-			if(rows.get(cellAddr.row-1).getCell(cellAddr.col-1).getFormattedValue() == null)
+			if(rows.get(cellAddr.row-1).getCell(cellAddr.col-1).getF() == null)
 				batchEntry.changeInputValueLocal(rows.get(cellAddr.row-1).getCell(cellAddr.col-1).getValue().toString());
 			else
-				batchEntry.changeInputValueLocal(rows.get(cellAddr.row-1).getCell(cellAddr.col-1).getFormattedValue().toString());
+				batchEntry.changeInputValueLocal(rows.get(cellAddr.row-1).getCell(cellAddr.col-1).getF().toString());
 			BatchUtils.setBatchId(batchEntry, cellAddr.idString);
 			BatchUtils.setBatchOperationType(batchEntry, BatchOperationType.UPDATE);
 			batchRequest.getEntries().add(batchEntry);
@@ -129,8 +126,10 @@ public class BatchCellUpdater {
 		}
 
 		CellFeed cellFeed = ssSvc.getFeed(cellFeedUrl, CellFeed.class);
+		System.out.println("Batch request!");
 		CellFeed queryBatchResponse = ssSvc.batch(new URL(cellFeed.getLink(Link.Rel.FEED_BATCH, Link.Type.ATOM).getHref()), batchRequest);
-
+		System.out.println("Batch response!");
+		
 		Map<String, CellEntry> cellEntryMap = new HashMap<String, CellEntry>(cellAddrs.size());
 		for (CellEntry entry : queryBatchResponse.getEntries()) {
 			cellEntryMap.put(BatchUtils.getBatchId(entry), entry);
