@@ -54,10 +54,11 @@ public class BatchCellUpdater {
 		}
 		rows.add(0, header);
 		
+		System.out.println(dt);
+		
 		// Build list of cell addresses to be filled in
 		List<CellAddress> cellAddrs = new ArrayList<CellAddress>();
-		for (int row = 2; row <= rows.size(); ++row) {
-			
+		for (int row = 1; row <= rows.size(); ++row) {
 			for (int col = 1; col <= rows.get(0).getC().size(); ++col) {
 				cellAddrs.add(new CellAddress(row, col));
 			}

@@ -39,11 +39,14 @@ public class UtilController {
 		DocsService service = new DocsService("mayRoro");
 		service.setHeader("Authorization", "OAuth "+ui.getAccess_token());
 		
+		SpreadsheetService ssSvc = new SpreadsheetService("mayRoro");
+		ssSvc.setHeader("Authorization", "OAuth "+ui.getAccess_token());
+		
 		if(title == null)
 			return "forward:/error?type=parameter_missing";
 		
 		try {
-			SpreadsheetEntry spreadsheet = createNewSpreadsheet(service, ConstFunc.SPREADSHEET_PREFIX+title);
+			SpreadsheetEntry spreadsheet = createNewSpreadsheet(service, ssSvc, ConstFunc.SPREADSHEET_PREFIX+title);
 			return "redirect:/maut/"+spreadsheet.getDocId();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -55,7 +58,7 @@ public class UtilController {
 	public @ResponseBody String save(@RequestParam("drevo") String drevo, @RequestParam("funkcije") String funkcije, @RequestParam("maut") String maut, @RequestParam("key") String key, HttpServletRequest req) {
 
 		System.out.println("ATTRIBUTES:");
-		System.out.println("drevo: "+ drevo + "\nFunkcije: " + funkcije + "\nMaut: " + maut);
+		System.out.println("Drevo: "+ drevo + "\nFunkcije: " + funkcije + "\nMaut: " + maut);
 		
 		HttpSession session = req.getSession();
 		String accessToken = ((UserInfo)session.getAttribute("userInfo")).getAccess_token();
@@ -141,16 +144,16 @@ public class UtilController {
 			output.addRow(newRow);
 		}
 		
-		return null;
+		return gson.toJson(output);
 	}
 	
-	private SpreadsheetEntry createNewSpreadsheet(DocsService service, String title) throws IOException, ServiceException {
+	private SpreadsheetEntry createNewSpreadsheet(DocsService service, SpreadsheetService ssSvc, String title) throws IOException, ServiceException {
 		SpreadsheetEntry newEntry = new SpreadsheetEntry();
 		newEntry.setTitle(new PlainTextConstruct(title));
 		
 		// Prevent collaborators from sharing the document with others?
 		// newEntry.setWritersCanInvite(false);
-
+		
 		// You can also hide the document on creation
 		// newEntry.setHidden(true);
 		
@@ -163,13 +166,18 @@ public class UtilController {
 		
 		// Worksheet - funkcije
 		createNewWorksheet(service, worksheetFeedUrl, "funkcije", 50, 60);
-
+		
 		// Worksheet - maut
-		createNewWorksheet(service, worksheetFeedUrl, "maut", 101, 51);
+		createNewWorksheet(service, worksheetFeedUrl, "maut", 30, 51);
 		
 		// Delete default worksheet
 		WorksheetEntry worksheet = spreadsheet.getWorksheets().get(0);
 		worksheet.delete();
+		
+		// Fill worksheets
+		BatchCellUpdater.update(ssSvc, spreadsheet.getDocId(), "od7", worksheetDrevo());
+		BatchCellUpdater.update(ssSvc, spreadsheet.getDocId(), "od4", worksheetFunkcije());
+		BatchCellUpdater.update(ssSvc, spreadsheet.getDocId(), "od5", worksheetMaut());
 		
 		return spreadsheet;
 	}
@@ -181,6 +189,160 @@ public class UtilController {
 		worksheet.setColCount(colCount);
 		service.insert(worksheetFeedUrl, worksheet);
 		return worksheet;
+	}
+	
+	private DataTable worksheetDrevo(){
+		DataTable dtDrevo = new DataTable();
+		
+		ColumnDescription cd = new ColumnDescription();
+		cd.setId("A");
+		cd.setLabel("child");
+		cd.setPattern("");
+		cd.setType("TEXT");
+		
+		dtDrevo.addCol(cd);
+		
+		cd = new ColumnDescription();
+		cd.setId("B");
+		cd.setLabel("parent");
+		cd.setPattern("");
+		cd.setType("TEXT");
+
+		dtDrevo.addCol(cd);
+		
+		cd = new ColumnDescription();
+		cd.setId("C");
+		cd.setLabel("");
+		cd.setPattern("");
+		cd.setType("NUMBER");
+
+		dtDrevo.addCol(cd);
+		
+		TableRow tr = new TableRow();
+		tr.addCell("<input type=\"text\" value=\"node 2\" nodeId=\"1\"/>");
+		tr.addCell("<input type=\"text\" value=\"node 1\" nodeId=\"0\"/>");
+		tr.addCell("0.5");
+		dtDrevo.addRow(tr);
+		
+		tr = new TableRow();
+		tr.addCell("<input type=\"text\" value=\"node 3\" nodeId=\"2\"/>");
+		tr.addCell("<input type=\"text\" value=\"node 1\" nodeId=\"0\"/>");
+		tr.addCell("0.5");
+		dtDrevo.addRow(tr);
+		
+		tr = new TableRow();
+		tr.addCell("<input type=\"text\" value=\"node 1\" nodeId=\"0\"/>");
+		tr.addCell("");
+		tr.addCell("");
+		dtDrevo.addRow(tr);
+		
+		return dtDrevo;
+	}
+	
+	private DataTable worksheetFunkcije(){
+		DataTable dtFunkcije = new DataTable();
+		
+		ColumnDescription cd = new ColumnDescription();
+		cd.setId("A");
+		cd.setLabel("node 2");
+		cd.setPattern("#,##0.###############");
+		cd.setType("NUMBER");
+		
+		dtFunkcije.addCol(cd);
+		
+		cd = new ColumnDescription();
+		cd.setId("B");
+		cd.setLabel("");
+		cd.setPattern("#,##0.###############");
+		cd.setType("NUMBER");
+
+		dtFunkcije.addCol(cd);
+		
+		cd = new ColumnDescription();
+		cd.setId("C");
+		cd.setLabel("node 3");
+		cd.setPattern("#,##0.###############");
+		cd.setType("NUMBER");
+
+		dtFunkcije.addCol(cd);
+		
+		cd = new ColumnDescription();
+		cd.setId("D");
+		cd.setLabel("");
+		cd.setPattern("#,##0.###############");
+		cd.setType("NUMBER");
+
+		dtFunkcije.addCol(cd);
+		
+		TableRow tr = new TableRow();
+		tr.addCell("0");
+		tr.addCell("100");
+		tr.addCell("0");
+		tr.addCell("100");
+		dtFunkcije.addRow(tr);
+		
+		for (int i = 1; i < 21; i++){
+			tr = new TableRow();
+			tr.addCell(Integer.toString(i));
+			tr.addCell("0,5");
+			tr.addCell(Integer.toString(i));
+			tr.addCell("0,5");
+			dtFunkcije.addRow(tr);
+		}
+		
+		return dtFunkcije;
+	}
+	
+	private DataTable worksheetMaut(){
+		DataTable dtMaut = new DataTable();
+		
+		ColumnDescription cd = new ColumnDescription();
+		cd.setId("A");
+		cd.setLabel("atribut");
+		cd.setPattern("");
+		cd.setType("TEXT");
+		
+		dtMaut.addCol(cd);
+		
+		cd = new ColumnDescription();
+		cd.setId("B");
+		cd.setLabel("alternativa 1");
+		cd.setPattern("");
+		cd.setType("TEXT");
+
+		dtMaut.addCol(cd);
+		
+		cd = new ColumnDescription();
+		cd.setId("C");
+		cd.setLabel("alternativa 2");
+		cd.setPattern("");
+		cd.setType("TEXT");
+
+		dtMaut.addCol(cd);
+		
+		cd = new ColumnDescription();
+		cd.setId("D");
+		cd.setLabel("alternativa 3");
+		cd.setPattern("");
+		cd.setType("TEXT");
+
+		dtMaut.addCol(cd);
+		
+		TableRow tr = new TableRow();
+		tr.addCell("node 2");
+		tr.addCell("0");
+		tr.addCell("0");
+		tr.addCell("0");
+		dtMaut.addRow(tr);
+		
+		tr = new TableRow();
+		tr.addCell("node 3");
+		tr.addCell("0");
+		tr.addCell("0");
+		tr.addCell("0");
+		dtMaut.addRow(tr);
+		
+		return dtMaut;
 	}
 	
 //	private void createFolder(DocsService client, String title) throws IOException, ServiceException {
