@@ -107,6 +107,11 @@ public class Tree {
 		}
 	}
 	
+	public void cleanNames(){
+		for (TreeNode node : getAllNodes()){
+			node.cleanName();
+		}
+	}
 	public List<TreeNode> getAllNodes(){
 		return this.root.getAllNodes();
 	}

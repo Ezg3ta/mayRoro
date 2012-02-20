@@ -468,19 +468,35 @@ $(".yellowGrad").live("click", function(){
 			alert(data)
 			var resultData = new google.visualization.DataTable();
 			
+			data="~asd;123~ds;123~asd;4324~fgds;adsa"
 			
 			array = new _create2DArray(40);
 			
 			nInx = 0;
 			vInx = 0;
-			
-			finished = false;
-			while(!finished){
+			i = 0;
+			while(true){
 				nInx = data.indexOf("~", nInx);
 				vInx = data.indexOf(";", vInx);
-				alert(nInx + "  " + vInx)
+				
+				if(nInx < 0 || vInx < 0){
+					break;
+				}
+				
+				//alert(nInx + "  " + vInx)
+				
+				array[i][0] = data.substring(nInx+1, vInx);
+				
+				n2Inx = data.indexOf("~", nInx+1);
+				
+				array[i][1] = data.substring(vInx+1, n2Inx);
+					
+				i++;
+				nInx++;
+				vInx++;
 			}
 			
+			alert(array)
 			
 			drawResultChart(data);
 		}
@@ -516,6 +532,16 @@ $(".logout").live("click", function(){
 
 
 $(".save").live("click", function(){
+	/* var dataZor = data.clone();
+	
+	for(i = 0; i < dataZor.getNumberOfColumns();i++){
+		for(j = 0; j < dataZor.getNumberOfColumns();j++){
+			
+			data.getValue()
+			
+		}
+	}*/
+	
 	$.post(
 		"<%=request.getContextPath()%>/util/save", 
 		{drevo: data.toJSON(), funkcije: functionData.toJSON(), maut: tableData.toJSON(), key: spreadsheetKey},
