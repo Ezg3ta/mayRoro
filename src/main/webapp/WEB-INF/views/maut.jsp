@@ -418,11 +418,10 @@ function _renameFunctionDatatable(_val){
 	
 	for(j = 0; j < functionData.getNumberOfColumns(); j = j + 2){
 		_s = String(functionData.getColumnLabel(j));
-		
 		if(_s.indexOf(nodeVal) >= 0){
-			//alert(_s)
 			_d = _s.replace(nodeVal, _val);
 			functionData.setColumnLabel(j,_d);
+			//alert(functionData.getColumnLabel(j))
 		}
 	}
 
@@ -461,6 +460,33 @@ $(".greenGrad").live("click", function(){
 	fillTable();
 });
 
+$(".yellowGrad").live("click", function(){
+	$.post(
+		"<%=request.getContextPath()%>/util/result", 
+		{drevo: data.toJSON(), funkcije: functionData.toJSON(), maut: tableData.toJSON(), key: spreadsheetKey},
+		function(data) {
+			alert(data)
+			var resultData = new google.visualization.DataTable();
+			
+			
+			array = new _create2DArray(40);
+			
+			nInx = 0;
+			vInx = 0;
+			
+			finished = false;
+			while(!finished){
+				nInx = data.indexOf("~", nInx);
+				vInx = data.indexOf(";", vInx);
+				alert(nInx + "  " + vInx)
+			}
+			
+			
+			drawResultChart(data);
+		}
+	);
+});
+
 $(".addAlternative").live("click", function(){
 	val = $("#alternativeName").attr("value");
 	if(val.length >= 2){
@@ -494,7 +520,7 @@ $(".save").live("click", function(){
 		"<%=request.getContextPath()%>/util/save", 
 		{drevo: data.toJSON(), funkcije: functionData.toJSON(), maut: tableData.toJSON(), key: spreadsheetKey},
 		function(a) {
-		   alert(a);
+		   //alert(a);
 		}
 	);
 	
@@ -815,9 +841,11 @@ google.setOnLoadCallback(drawVisualization);
             
              <script type="text/javascript">
       google.load("visualization", "1", {packages:["corechart"]});
-      google.setOnLoadCallback(drawChart);
-      function drawChart() {
-        var data = new google.visualization.DataTable();
+      //google.setOnLoadCallback(drawResultChart);
+      
+      function drawResultChart(data) {
+        
+    	 /*var data = new google.visualization.DataTable();
         data.addColumn('string', 'Year');
         data.addColumn('number', 'Sales');
         data.addColumn('number', 'Expenses');
@@ -827,10 +855,12 @@ google.setOnLoadCallback(drawVisualization);
           ['2006', 660, 1120],
           ['2007', 1030, 540]
         ]);
+        
+        */
 
         var options = {
-          width: 600, height: 400,
-          title: 'Company Performance',
+          width: 800, height: 600,
+          title: 'Rezultat',
           hAxis: {title: 'Year', titleTextStyle: {color: 'red'}}
         };
 

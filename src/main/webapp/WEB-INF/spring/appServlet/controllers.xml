@@ -23,6 +23,7 @@
 				<list>
 					<value>/mayRoro/test</value>
 					<value>/mayRoro/util/save</value>
+					<value>/mayRoro/util/result</value>
 					<value>/mayRoro/resources</value>
 				</list>
 			</constructor-arg>

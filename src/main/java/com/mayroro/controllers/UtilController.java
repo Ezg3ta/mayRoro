@@ -141,7 +141,7 @@ public class UtilController {
 			output.addRow(newRow);
 		}
 		
-		return null;
+		return gson.toJson(output);
 	}
 	
 	private SpreadsheetEntry createNewSpreadsheet(DocsService service, String title) throws IOException, ServiceException {
