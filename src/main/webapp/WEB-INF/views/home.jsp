@@ -378,6 +378,17 @@ $(".save").live("click", function(){
       <a href="<c:out value="maut/${spreadsheet.key}" />"><c:out value="${spreadsheet.title.plainText}" /></a><br />
     </c:forEach>
     
+    <br/><br/><br/>
+    
+    <h1>Ustvari nov projekt</h1><br/><br/>
+    
+    
+    <form method="get" action="/mayRoro/util/new_spreadsheet"> 
+	    <input name="title" type="text"/>
+	    <input type="submit" title="ustvari"/>
+    </form>
+    
+    
 
 
 </body>

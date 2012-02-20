@@ -465,10 +465,8 @@ $(".yellowGrad").live("click", function(){
 		"<%=request.getContextPath()%>/util/result", 
 		{drevo: data.toJSON(), funkcije: functionData.toJSON(), maut: tableData.toJSON(), key: spreadsheetKey},
 		function(data) {
-			alert(data)
+			//alert(data)
 			var resultData = new google.visualization.DataTable();
-			
-			data="~asd;123~ds;123~asd;4324~fgds;adsa"
 			
 			array = new _create2DArray(40);
 			
@@ -489,6 +487,10 @@ $(".yellowGrad").live("click", function(){
 				
 				n2Inx = data.indexOf("~", nInx+1);
 				
+				if(n2Inx < 0){
+					n2Inx = data.length;
+				}
+				
 				array[i][1] = data.substring(vInx+1, n2Inx);
 					
 				i++;
@@ -496,9 +498,16 @@ $(".yellowGrad").live("click", function(){
 				vInx++;
 			}
 			
-			alert(array)
+			//alert(array)
 			
-			drawResultChart(data);
+			resultData.addColumn("string", "alternative");
+			resultData.addColumn("number", "vrednosti");
+			for(i = 0; i < array.length; i++){
+				if(array[i][0] != undefined)
+					resultData.addRow([array[i][0], parseFloat(array[i][1]) ]);
+			}
+			
+			drawResultChart(resultData);
 		}
 	);
 });
@@ -789,6 +798,8 @@ google.setOnLoadCallback(drawVisualization);
 			  
 				for(j = col; j < data.getNumberOfColumns(); j++){
 					
+					
+					
 					val = data.getValue(i,j);
 					if (val == null){
 						val = "";
@@ -887,7 +898,7 @@ google.setOnLoadCallback(drawVisualization);
         var options = {
           width: 800, height: 600,
           title: 'Rezultat',
-          hAxis: {title: 'Year', titleTextStyle: {color: 'red'}}
+          hAxis: {title: 'Vrednosti', titleTextStyle: {color: 'gray'}}
         };
 
         var chart = new google.visualization.ColumnChart(document.getElementById('result_chart_div'));

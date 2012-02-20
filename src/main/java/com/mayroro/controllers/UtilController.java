@@ -123,9 +123,9 @@ public class UtilController {
 			sb.append(dtMaut.getCols().get(i).getLabel());
 			sb.append(";");
 			
-			result = Double.toString(drevo.calculateValue()).replace('.', ',');
-			sb.append(result);
-//			sb.append(drevo.calculateValue());
+			//result = Double.toString(drevo.calculateValue()).replace('.', ',');
+			//sb.append(result);
+			sb.append(drevo.calculateValue());
 		}
 		
 		System.out.println(sb.toString());
