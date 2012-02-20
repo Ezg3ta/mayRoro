@@ -77,41 +77,24 @@ public class TestController {
 		
 		
 		
-		DataTable output = new DataTable();
-		ColumnDescription col = new ColumnDescription();
-		col.setId("A");
-		col.setLabel("alternativa");
-		col.setPattern("");
-		col.setType("TEXT");
-		
-		output.addCol(col);
-		
-		col = new ColumnDescription();
-		col.setId("B");
-		col.setLabel("ocena");
-		col.setPattern("#,##0.###############");
-		col.setType("NUMBER");
-		
-		output.addCol(col);
-		
-		TableRow newRow;
-		TableCell newCell;
+		StringBuilder sb = new StringBuilder();
+		String result;
 		for (int i = 1; i < dtMaut.getCols().size(); i++){
 			drevoTree.setData(dtMaut, i);
 			if (!drevoTree.isDataComplete()){
 				System.out.println("CHECK DATA!");
 				continue;
 			}
-			newRow = new TableRow();
-			newRow.addCell(dtMaut.getCols().get(i).getLabel());
-			newCell = new TableCell(Double.toString(drevoTree.calculateValue()));
-			newCell.setF(newCell.getValue().replace('.', ','));
-			newRow.addCell(newCell);
-			output.addRow(newRow);
+			sb.append("~");
+			sb.append(dtMaut.getCols().get(i).getLabel());
+			sb.append(";");
+			
+			result = Double.toString(drevoTree.calculateValue()).replace('.', ',');
+			sb.append(result);
+//			sb.append(drevo.calculateValue());
 		}
 		
-		System.out.println(output.colsToString());
-		System.out.println(output);
+		System.out.println(sb.toString());
 	}
 }
  
