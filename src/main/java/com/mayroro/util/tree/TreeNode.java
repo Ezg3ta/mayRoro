@@ -136,6 +136,11 @@ public class TreeNode {
 		return nodes;
 	}
 	
+	public void cleanName(){
+		String n = name.substring("<input type=\"text\" value=\"".length());
+		name = n.substring(0,n.indexOf('"'));
+	}
+	
 	public String toString(){
 		return toString("");
 	}

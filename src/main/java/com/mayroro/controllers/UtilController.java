@@ -23,7 +23,6 @@ import com.mayroro.util.ColumnDescription;
 import com.mayroro.util.DataTable;
 import com.mayroro.util.BatchCellUpdater;
 import com.mayroro.util.ConstFunc;
-import com.mayroro.util.TableCell;
 import com.mayroro.util.TableRow;
 import com.mayroro.util.UserInfo;
 import com.mayroro.util.tree.*;
@@ -109,6 +108,7 @@ public class UtilController {
 		dtDrevo.removeEmptyRows();
 		
 		Tree drevo = new Tree(dtDrevo);
+		drevo.cleanNames();
 		drevo.setMautFunction(dtFunkcije);
 		
 		StringBuilder sb = new StringBuilder();
