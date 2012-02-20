@@ -19,7 +19,7 @@ public class TreeNode {
 		this(name, null);
 	}
 	public TreeNode(String name, TreeNode parent){
-		this(name, -1, parent);
+		this(name, 1, parent);
 	}
 	public TreeNode(String name, double mautWeight, TreeNode parent){
 		this.name = name;
@@ -121,6 +121,17 @@ public class TreeNode {
 		nodes.add(this);
 		for (TreeNode node : this.children){
 			nodes.addAll(node.getAllNodes());
+		}
+		return nodes;
+	}
+	public List<TreeNode> getLeafNodes(){
+		List<TreeNode> nodes = new ArrayList<TreeNode>();
+		if (children.size() == 0)
+			nodes.add(this);
+		else{
+			for (TreeNode node : children){
+				nodes.addAll(node.getLeafNodes());
+			}
 		}
 		return nodes;
 	}

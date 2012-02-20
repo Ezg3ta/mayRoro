@@ -1,8 +1,12 @@
 package com.mayroro.controllers;
 
+import java.util.List;
+
 import com.google.gson.Gson;
 import com.mayroro.util.ColumnDescription;
 import com.mayroro.util.DataTable;
+import com.mayroro.util.TableCell;
+import com.mayroro.util.TableRow;
 import com.mayroro.util.tree.*;
 
 public class TestController {
@@ -69,7 +73,45 @@ public class TestController {
 		drevoTree.setData(dtMaut, 1);
 		System.out.println(drevoTree);
 		
-		System.out.println(drevoTree.calculateValue());
+		System.out.println(drevoTree.isDataComplete());
+		
+		
+		
+		DataTable output = new DataTable();
+		ColumnDescription col = new ColumnDescription();
+		col.setId("A");
+		col.setLabel("alternativa");
+		col.setPattern("");
+		col.setType("TEXT");
+		
+		output.addCol(col);
+		
+		col = new ColumnDescription();
+		col.setId("B");
+		col.setLabel("ocena");
+		col.setPattern("#,##0.###############");
+		col.setType("NUMBER");
+		
+		output.addCol(col);
+		
+		TableRow newRow;
+		TableCell newCell;
+		for (int i = 1; i < dtMaut.getCols().size(); i++){
+			drevoTree.setData(dtMaut, i);
+			if (!drevoTree.isDataComplete()){
+				System.out.println("CHECK DATA!");
+				continue;
+			}
+			newRow = new TableRow();
+			newRow.addCell(dtMaut.getCols().get(i).getLabel());
+			newCell = new TableCell(Double.toString(drevoTree.calculateValue()));
+			newCell.setF(newCell.getValue().replace('.', ','));
+			newRow.addCell(newCell);
+			output.addRow(newRow);
+		}
+		
+		System.out.println(output.colsToString());
+		System.out.println(output);
 	}
 }
  

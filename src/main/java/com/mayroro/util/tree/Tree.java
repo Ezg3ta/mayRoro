@@ -63,7 +63,6 @@ public class Tree {
 	public void setMautFunction(DataTable funkcije){
 		double k, n, min, max;
 		SortedMap<Double, Double> funkcijeNode;
-		TableRow newRow;
 		for (int i = 1; i < funkcije.getCols().size(); i += 2){
 			for (TreeNode node : getAllNodes()){
 				if (node.getName().equals(funkcije.getCols().get(i-1).getLabel())){
@@ -110,6 +109,21 @@ public class Tree {
 	
 	public List<TreeNode> getAllNodes(){
 		return this.root.getAllNodes();
+	}
+	public List<TreeNode> getLeafNodes(){
+		return this.root.getLeafNodes();
+	}
+	
+	public boolean isDataComplete(){
+		List<TreeNode> nodes = getLeafNodes();
+		boolean dataComplete = true;
+		for (TreeNode node : nodes){
+			if (node.getData() == -1){
+				dataComplete = false;
+				break;
+			}
+		}
+		return dataComplete;
 	}
 	public double calculateValue(){
 		return this.root.calculateValue();

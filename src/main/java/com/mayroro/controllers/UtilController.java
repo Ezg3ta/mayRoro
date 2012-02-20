@@ -19,10 +19,14 @@ import com.google.gdata.data.spreadsheet.WorksheetEntry;
 import com.google.gdata.data.spreadsheet.WorksheetFeed;
 import com.google.gdata.util.ServiceException;
 import com.google.gson.Gson;
+import com.mayroro.util.ColumnDescription;
 import com.mayroro.util.DataTable;
 import com.mayroro.util.BatchCellUpdater;
 import com.mayroro.util.ConstFunc;
+import com.mayroro.util.TableCell;
+import com.mayroro.util.TableRow;
 import com.mayroro.util.UserInfo;
+import com.mayroro.util.tree.*;
 
 @Controller
 @RequestMapping("/util")
@@ -92,14 +96,50 @@ public class UtilController {
 	}
 	
 	@RequestMapping(value="/result")
-	public @ResponseBody String result(@RequestParam("drevo") String drevo, @RequestParam("funkcije") String funkcije, @RequestParam("maut") String maut) {
+	public @ResponseBody String result(@RequestParam("drevo") String drevoJson, @RequestParam("funkcije") String funkcijeJson, @RequestParam("maut") String mautJson) {
 		Gson gson = new Gson();
 		
-		DataTable dtDrevo = gson.fromJson(drevo, com.mayroro.util.DataTable.class);
-		DataTable dtFunkcije = gson.fromJson(drevo, com.mayroro.util.DataTable.class);
-		DataTable dtMaut = gson.fromJson(drevo, com.mayroro.util.DataTable.class);
+		DataTable dtDrevo = gson.fromJson(drevoJson, com.mayroro.util.DataTable.class);
+		DataTable dtFunkcije = gson.fromJson(funkcijeJson, com.mayroro.util.DataTable.class);
+		DataTable dtMaut = gson.fromJson(mautJson, com.mayroro.util.DataTable.class);
 		
+		dtDrevo.removeEmptyRows();
 		
+		Tree drevo = new Tree(dtDrevo);
+		drevo.setMautFunction(dtFunkcije);
+		
+		DataTable output = new DataTable();
+		ColumnDescription col = new ColumnDescription();
+		col.setId("A");
+		col.setLabel("alternativa");
+		col.setPattern("");
+		col.setType("TEXT");
+		
+		output.addCol(col);
+		
+		col = new ColumnDescription();
+		col.setId("B");
+		col.setLabel("ocena");
+		col.setPattern("#,##0.###############");
+		col.setType("NUMBER");
+		
+		output.addCol(col);
+		
+		TableRow newRow;
+		TableCell newCell;
+		for (int i = 1; i < dtMaut.getCols().size(); i++){
+			drevo.setData(dtMaut, i);
+			if (!drevo.isDataComplete()){
+				System.out.println("CHECK DATA!");
+				continue;
+			}
+			newRow = new TableRow();
+			newRow.addCell(dtMaut.getCols().get(i).getLabel());
+			newCell = new TableCell(Double.toString(drevo.calculateValue()));
+			newCell.setF(newCell.getValue().replace('.', ','));
+			newRow.addCell(newCell);
+			output.addRow(newRow);
+		}
 		
 		return null;
 	}
