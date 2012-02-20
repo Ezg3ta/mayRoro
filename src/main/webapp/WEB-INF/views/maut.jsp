@@ -206,7 +206,7 @@ function initUtilityGraph(name, pointCoords, min, max){
 	
 	function showPopupWeight(name, cls){
 		$(".popupWeight").css("display","block");
-		text = '<div class="closePopup">&times;</div> <br/> <br/><div><h1> Uteži za: '+name+'</h1><ul>';
+		text = '<div class="closePopup">&times;</div> <br/> <br/><div class="zor"><h1> Uteži za: '+name+'</h1><ul>';
 		
 		list = "";
 		
@@ -215,7 +215,7 @@ function initUtilityGraph(name, pointCoords, min, max){
 				break;
 			}
 			else{
-				list = list + "<li> <input type='text' value='"+cls[i][1]+"'/> - "+cls[i][0]+" </li>";
+				list = list + "<li> <input type='text' value='"+cls[i][1]+"' row='"+cls[i][2]+"'/> - "+cls[i][0]+" </li>";
 			}
 		}
 		text = text + list;
@@ -230,7 +230,7 @@ function initUtilityGraph(name, pointCoords, min, max){
 			$(".popupWeight").css("display","none");
 	}
 	
-	$(".closePopup").live("click", function(){
+	$(".popup .closePopup").live("click", function(){
 		hidePopup();
 		nodesData[currentNodeIndex].pointCoords = plot.series[0].data;
 		
@@ -250,6 +250,22 @@ function initUtilityGraph(name, pointCoords, min, max){
 		
 		
 		plot.destroy();
+	});
+	
+	
+	$(".popupWeight .closePopup").live("click", function(){
+		var row;
+		var value;
+		$(this).parent("div").children(".zor").children("ul").children("li").each(function(){
+			
+			row = parseInt($(this).children("input").attr("row"));
+			value = parseFloat($(this).children("input").attr("value"));
+			
+			//alert(row + " " + value)
+			data.setValue(row, 2, value);
+			
+		});
+		hidePopup();
 	});
 	
 </script>
@@ -361,7 +377,8 @@ function _getNodeChildrens(parent){
 	for(i = 0; i < data.getNumberOfRows(); i++){
 		if(String(data.getValue(i,1)).indexOf(parent) > 0){
 			_s = data.getValue(i,0);
-			_s = _s.substring(_s.indexOf("value=")+7, _s.indexOf("node")-2).replace("\"","");
+			_s = _s.substring(_s.indexOf("value=")+7, _s.indexOf("nodeId=")-2).replace("\"","");
+			//alert(_s)
 			cls[cnt][0] = _s;
 			cls[cnt][1] = data.getValue(i,2);
 			cls[cnt][2] = i;
@@ -798,10 +815,10 @@ google.setOnLoadCallback(drawVisualization);
 			  
 				for(j = col; j < data.getNumberOfColumns(); j++){
 					
-					
-					
 					val = data.getValue(i,j);
-					if (val == null){
+					
+					//alert(val)
+					if (val == null || val == undefined){
 						val = "";
 					}
 					value = '<input class="tblInput" type="text" row="'+i+'" col="'+j+'" value="' + val + '"/>' ;
