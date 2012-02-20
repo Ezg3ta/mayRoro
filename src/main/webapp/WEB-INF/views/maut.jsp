@@ -204,8 +204,30 @@ function initUtilityGraph(name, pointCoords, min, max){
 			initUtilityGraph(name, pointCoords, min, max);
 	}
 	
+	function showPopupWeight(name, cls){
+		$(".popupWeight").css("display","block");
+		text = '<div class="closePopup">&times;</div> <br/> <br/><div><h1> Uteži za: '+name+'</h1><ul>';
+		
+		list = "";
+		
+		for(i = 0; i < cls.length; i++){
+			if(cls[i][0] == undefined){
+				break;
+			}
+			else{
+				list = list + "<li> <input type='text' value='"+cls[i][1]+"'/> - "+cls[i][0]+" </li>";
+			}
+		}
+		text = text + list;
+		text = text + "</div></ul>";
+		$(".popupWeight").html(text);
+		
+		//initUtilityGraph(name, pointCoords, min, max);
+	}
+	
 	function hidePopup(){
 			$(".popup").css("display","none");
+			$(".popupWeight").css("display","none");
 	}
 	
 	$(".closePopup").live("click", function(){
@@ -294,14 +316,14 @@ $(".addModelNode").live("click", function(){
 	functionData.addColumn("string", ""+newNodeId);
 	functionData.addColumn("string", "");
 	
-	j = functionData.getNumberOfColumns() - 1;
+	j = functionData.getNumberOfColumns() - 2;
 	
-	functionData.setCell(0, j, min);
-	functionData.setCell(0, j+1, max);
+	functionData.setCell(0, j, ""+min);
+	functionData.setCell(0, j+1, ""+max);
 
 	for(k = 0; k < 20; k++){
-		functionData.setCell(k + 1, j, parseInt(defaultCoords[k][0]));
-		functionData.setCell(k + 1, j + 1, parseFloat(defaultCoords[k][1]));
+		functionData.setCell(k + 1, j, String(parseInt(defaultCoords[k][0])));
+		functionData.setCell(k + 1, j + 1, String(parseFloat(defaultCoords[k][1])));
 	}	
 	
 	tableData.addRow();
@@ -332,11 +354,44 @@ $(".deleteModelNode").live("click", function(){
   
 });
 
-$(".functionModelNode").live("click", function(){
-	i = _getCurrentNodeIndex();
-	showPopup(nodesData[i].name, nodesData[i].pointCoords, nodesData[i].min, nodesData[i].max);
-});
+function _getNodeChildrens(parent){
+	var cls = _create2DArray(data.getNumberOfRows());
+	var cnt = 0;
+	  
+	for(i = 0; i < data.getNumberOfRows(); i++){
+		if(String(data.getValue(i,1)).indexOf(parent) > 0){
+			_s = data.getValue(i,0);
+			_s = _s.substring(_s.indexOf("value=")+7, _s.indexOf("node")-2).replace("\"","");
+			cls[cnt][0] = _s;
+			cls[cnt][1] = data.getValue(i,2);
+			cls[cnt][2] = i;
+			cnt++;
+			
+		}
+	}
+	  
+	return cls;
+	
+}
 
+$(".functionModelNode").live("click", function(){
+	n = _getNodeIndex();
+	isLeaf = false;
+	leafs = _getLeafs(data, nodesData);
+	for(i=0; i < leafs.length; i++){
+		if(leafs[i] == nodesData[n].name){
+			//alert(leafs[i])
+			isLeaf = true;
+			break;
+		}
+	}
+	if(isLeaf){
+		showPopup(nodesData[n].name, nodesData[n].pointCoords, nodesData[n].min, nodesData[n].max);
+	}
+	else{
+		showPopupWeight(nodesData[n].name, _getNodeChildrens(nodesData[n].name));
+	}
+});
 
 
 /*  					*/
@@ -345,13 +400,12 @@ $(".google-visualization-orgchart-node input").live("focusin", function(){
 	nodeVal = $(this).attr("value");
 });
 
-function _renameDatatable(){
+function _renameDatatable(_val){
 	
 	for(i = 0; i < data.getNumberOfRows(); i++){
 		
 		for(j = 0; j < data.getNumberOfColumns() - 1; j++){
 			_s = data.getValue(i,j);
-			
 			if(_s.indexOf(nodeVal) >= 0){
 				_d = _s.replace(nodeVal, _val);
 				data.setCell(i,j,_d);
@@ -360,27 +414,29 @@ function _renameDatatable(){
 	}
 }
 
-function _renameFunctionDatatable(){
+function _renameFunctionDatatable(_val){
 	
 	for(j = 0; j < functionData.getNumberOfColumns(); j = j + 2){
-		_s = functionData.getValue(0,j);
+		_s = String(functionData.getColumnLabel(j));
 		
 		if(_s.indexOf(nodeVal) >= 0){
+			//alert(_s)
 			_d = _s.replace(nodeVal, _val);
-			functionData.setCell(0,j,_d);
+			functionData.setColumnLabel(j,_d);
 		}
 	}
 
 }
 
-function _renameTableDatatable(){
+function _renameTableDatatable(_val){
 	
-	for(j = 0; j < tableData.getNumberOfColumns(); j++){
+	for(j = 0; j < tableData.getNumberOfRows(); j++){
 		_s = tableData.getValue(j,0);
 		
 		if(_s.indexOf(nodeVal) >= 0){
+			//alert(_s)
 			_d = _s.replace(nodeVal, _val);
-			functionData.setCell(j,0,_d);
+			tableData.setCell(j,0,_d);
 		}
 	}
 
@@ -392,9 +448,9 @@ $(".google-visualization-orgchart-node input").live("focusout", function(){
 	n = _getNodeIndex();
 	nodesData[n].name = _val;	
 	
-	_renameDatatable();
-	_renameFunctionDatatable();
-	_renameTableDatatable();
+	_renameDatatable(_val);
+	_renameFunctionDatatable(_val);
+	_renameTableDatatable(_val);
 	
 	mautModel.draw(data, {allowHtml:true});
 	mautModel.setSelection();
@@ -643,7 +699,7 @@ google.setOnLoadCallback(drawVisualization);
 	  function _getLeafsData(tblData, parents){
 		
 		var node;
-		var leafsDat = tblData;
+		var leafsDat = tblData.clone();
 		//alert(tblData.getValue(0,0));
 		var isLeaf = true;
 		var cnt = 0;
@@ -653,6 +709,7 @@ google.setOnLoadCallback(drawVisualization);
 			
 			isLeaf = true;
 			for(j = 0; j < tblData.getNumberOfRows(); j++){
+				//alert(tblData.getValue(j,0))
 				if(tblData.getValue(j, 0) == node){
 					isLeaf = false;
 					break;
@@ -794,6 +851,11 @@ google.setOnLoadCallback(drawVisualization);
     <div class="popup">
     	<div class="closePopup">&times;</div>
     	<div class="example-plot" id="utilityGraph"></div>  
+    </div>
+    
+    
+    <div class="popupWeight">
+    	<div class="closePopup">&times;</div>
     </div>
     
     

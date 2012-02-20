@@ -355,7 +355,7 @@ body{
 }
 /*	popup	*/
 
-.popup{
+.popup, .popupWeight{
 	position:absolute;
 	z-index:9999999;
 	background:#fff;
@@ -370,12 +370,21 @@ body{
 	left:30%;
 	display:none;
 }
-.popup .closePopup{
+.popup .closePopup, .popupWeight .closePopup{
 	cursor:pointer;
 	color:#999;
 	font-size:14px;
 	float:right;
 }
-.popup .closePopup:hover{
+.popup .closePopup:hover, , .popupWeight .closePopup:hover{
 	color:#333;
+}
+.popupWeight div{
+	text-align:left;
+}
+.popupWeight ul{
+	list-style-type: none;
+}
+.popupWeight li{
+	padding:5px;
 }
