@@ -111,40 +111,25 @@ public class UtilController {
 		Tree drevo = new Tree(dtDrevo);
 		drevo.setMautFunction(dtFunkcije);
 		
-		DataTable output = new DataTable();
-		ColumnDescription col = new ColumnDescription();
-		col.setId("A");
-		col.setLabel("alternativa");
-		col.setPattern("");
-		col.setType("TEXT");
-		
-		output.addCol(col);
-		
-		col = new ColumnDescription();
-		col.setId("B");
-		col.setLabel("ocena");
-		col.setPattern("#,##0.###############");
-		col.setType("NUMBER");
-		
-		output.addCol(col);
-		
-		TableRow newRow;
-		TableCell newCell;
+		StringBuilder sb = new StringBuilder();
+		String result;
 		for (int i = 1; i < dtMaut.getCols().size(); i++){
 			drevo.setData(dtMaut, i);
 			if (!drevo.isDataComplete()){
 				System.out.println("CHECK DATA!");
 				continue;
 			}
-			newRow = new TableRow();
-			newRow.addCell(dtMaut.getCols().get(i).getLabel());
-			newCell = new TableCell(Double.toString(drevo.calculateValue()));
-			newCell.setF(newCell.getValue().replace('.', ','));
-			newRow.addCell(newCell);
-			output.addRow(newRow);
+			sb.append("~");
+			sb.append(dtMaut.getCols().get(i).getLabel());
+			sb.append(";");
+			
+			result = Double.toString(drevo.calculateValue()).replace('.', ',');
+			sb.append(result);
+//			sb.append(drevo.calculateValue());
 		}
 		
-		return gson.toJson(output);
+		System.out.println(sb.toString());
+		return sb.toString();
 	}
 	
 	private SpreadsheetEntry createNewSpreadsheet(DocsService service, SpreadsheetService ssSvc, String title) throws IOException, ServiceException {
