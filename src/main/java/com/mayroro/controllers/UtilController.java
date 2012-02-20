@@ -199,20 +199,20 @@ public class UtilController {
 		cd.setId("C");
 		cd.setLabel("");
 		cd.setPattern("");
-		cd.setType("NUMBER");
+		cd.setType("TEXT");
 
 		dtDrevo.addCol(cd);
 		
 		TableRow tr = new TableRow();
 		tr.addCell("<input type=\"text\" value=\"node 2\" nodeId=\"1\"/>");
 		tr.addCell("<input type=\"text\" value=\"node 1\" nodeId=\"0\"/>");
-		tr.addCell("0.5");
+		tr.addCell("0,5");
 		dtDrevo.addRow(tr);
 		
 		tr = new TableRow();
 		tr.addCell("<input type=\"text\" value=\"node 3\" nodeId=\"2\"/>");
 		tr.addCell("<input type=\"text\" value=\"node 1\" nodeId=\"0\"/>");
-		tr.addCell("0.5");
+		tr.addCell("0,5");
 		dtDrevo.addRow(tr);
 		
 		tr = new TableRow();
@@ -229,33 +229,49 @@ public class UtilController {
 		
 		ColumnDescription cd = new ColumnDescription();
 		cd.setId("A");
-		cd.setLabel("node 2");
-		cd.setPattern("#,##0.###############");
-		cd.setType("NUMBER");
+		cd.setLabel("node 1");
+		cd.setPattern("");
+		cd.setType("TEXT");
 		
 		dtFunkcije.addCol(cd);
 		
 		cd = new ColumnDescription();
 		cd.setId("B");
 		cd.setLabel("");
-		cd.setPattern("#,##0.###############");
-		cd.setType("NUMBER");
-
+		cd.setPattern("");
+		cd.setType("TEXT");
+		
 		dtFunkcije.addCol(cd);
 		
 		cd = new ColumnDescription();
 		cd.setId("C");
-		cd.setLabel("node 3");
-		cd.setPattern("#,##0.###############");
-		cd.setType("NUMBER");
-
+		cd.setLabel("node 2");
+		cd.setPattern("");
+		cd.setType("TEXT");
+		
 		dtFunkcije.addCol(cd);
 		
 		cd = new ColumnDescription();
 		cd.setId("D");
 		cd.setLabel("");
-		cd.setPattern("#,##0.###############");
-		cd.setType("NUMBER");
+		cd.setPattern("");
+		cd.setType("TEXT");
+
+		dtFunkcije.addCol(cd);
+		
+		cd = new ColumnDescription();
+		cd.setId("E");
+		cd.setLabel("node 3");
+		cd.setPattern("");
+		cd.setType("TEXT");
+
+		dtFunkcije.addCol(cd);
+		
+		cd = new ColumnDescription();
+		cd.setId("F");
+		cd.setLabel("");
+		cd.setPattern("");
+		cd.setType("TEXT");
 
 		dtFunkcije.addCol(cd);
 		
@@ -264,10 +280,14 @@ public class UtilController {
 		tr.addCell("100");
 		tr.addCell("0");
 		tr.addCell("100");
+		tr.addCell("0");
+		tr.addCell("100");
 		dtFunkcije.addRow(tr);
 		
 		for (int i = 1; i < 21; i++){
 			tr = new TableRow();
+			tr.addCell(Integer.toString(i));
+			tr.addCell("0,5");
 			tr.addCell(Integer.toString(i));
 			tr.addCell("0,5");
 			tr.addCell(Integer.toString(i));
@@ -314,6 +334,13 @@ public class UtilController {
 		dtMaut.addCol(cd);
 		
 		TableRow tr = new TableRow();
+		tr.addCell("node 1");
+		tr.addCell("0");
+		tr.addCell("0");
+		tr.addCell("0");
+		dtMaut.addRow(tr);
+		
+		tr = new TableRow();
 		tr.addCell("node 2");
 		tr.addCell("0");
 		tr.addCell("0");
@@ -326,6 +353,7 @@ public class UtilController {
 		tr.addCell("0");
 		tr.addCell("0");
 		dtMaut.addRow(tr);
+		
 		
 		return dtMaut;
 	}
