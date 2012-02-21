@@ -94,6 +94,10 @@ public class Tree {
 						funkcijeNode.put((k*j+n),(Double.parseDouble(funkcije.getCell(j, i).getValue())));
 					}
 					node.setMautFunction(new MautFunction(funkcijeNode));
+					System.out.println("FUNCTION: "+node.getName());
+					for (Double key : node.getMautFunction().getFunction().keySet()){
+						System.out.println(key+": "+node.getMautFunction().getFunction().get(key));
+					}
 					break;
 				}
 			}

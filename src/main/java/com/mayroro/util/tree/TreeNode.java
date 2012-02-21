@@ -109,6 +109,7 @@ public class TreeNode {
 			for (TreeNode child : this.children){
 				value += child.calculateValue();
 			}
+			value = value*mautWeight;
 		}
 		// list
 		else if (mautFunction != null) {
@@ -145,7 +146,7 @@ public class TreeNode {
 		return toString("");
 	}
 	public String toString(String tab){
-		String s = String.format("Name: %s, Data: %f, Parent: %s\n", this.name, this.data, this.parent == null ? "null" : this.parent.getName());
+		String s = String.format("Name: %s, Data: %f, Parent: %s, Weight: %f\n", this.name, this.data, this.parent == null ? "null" : this.parent.getName(), this.mautWeight);
 		for (TreeNode child : this.children){
 			s = s.concat(tab+"\t"+child.toString(tab+"\t"));
 		}
