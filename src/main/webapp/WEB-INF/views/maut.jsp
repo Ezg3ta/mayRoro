@@ -127,8 +127,8 @@ function initNodesIds(){
 		for(j = 0; j < functionData.getNumberOfColumns(); j=j+2){
 			//alert(functionData.getValue(0,j))
 			if(nodesName[i] == functionData.getColumnLabel(j)){
-				//min = functionData.getValue(0, j);
-				//max = functionData.getValue(0, j+1);
+				min = functionData.getValue(0, j);
+				max = functionData.getValue(0, j+1);
 				
 				coords = _create2DArray(20);
 				
@@ -163,11 +163,12 @@ function initUtilityGraph(name, pointCoords, min, max){
 	 },
 	 axes: {
 		 xaxis: {
-			 min: min,
-			 max: max,
-			 numberTicks: 10,
+			 min: 1,
+			 max: 20,
+			 numberTicks: 20,
+			 pad: 1.2,
 			 tickOptions: {
-			 	formatString: '%.2f'
+			 	formatString: ''
 			 }
 		 },
 		 yaxis: {
@@ -209,6 +210,10 @@ function initUtilityGraph(name, pointCoords, min, max){
 	
 	function showPopup(name, pointCoords, min, max){
 			$(".popup").css("display","block");
+			
+			$("#minVal").attr("value", min);
+			$("#maxVal").attr("value", max);
+			
 			initUtilityGraph(name, pointCoords, min, max);
 	}
 	
@@ -251,8 +256,16 @@ function initUtilityGraph(name, pointCoords, min, max){
 		coords = nodesData[ndIndx].pointCoords;
 		
 		
+		var min = parseFloat($("#minVal").attr("value"));
+		var max = parseFloat($("#maxVal").attr("value"));
+		
+		nodesData[ndIndx].min = min;
+		nodesData[ndIndx].max = max;
+		
 		for(j = 0; j < functionData.getNumberOfColumns(); j=j+2){
 			if(name == functionData.getColumnLabel(j)){
+				functionData.setCell(0, j, min);
+				functionData.setCell(0, j+1, max);
 				
 				for(k = 0; k < 20; k++){
 					functionData.setCell(k + 1, j, parseInt(coords[k][0]));
@@ -576,14 +589,31 @@ $(".tblInput").live("focusout", function(){
 	col = parseInt($(this).attr("col"));
 	val = parseInt($(this).attr("value"));
 	
-	tableData.setCell(row+1, col, val);
+	tableData.setCell(row, col, val);
 	drawTable();
 });
 
 
+$(".label").live("focusout", function(){
+	
+	col = parseInt($(this).attr("col"));
+	val = $(this).attr("value");
+	
+	if(val == "-del"){
+		tableData.removeColumn(col);
+	}
+	else{
+		tableData.setColumnLabel(col, val);
+		drawTable();
+	}
+	
+});
+
+
 $(".logout").live("click", function(){
-	$.get("logout");
+	$.get("<%=request.getContextPath()%>/logout");
 	$.get("https://accounts.google.com/Logout");
+	window.location.href = 'http://127.0.0.1:8080/mayRoro/';
 	return false;
 	
 });
@@ -627,9 +657,7 @@ $(".save").live("click", function(){
        
         <div class="menu">
         
-        	<div class="btnM">Projekti</div>
-            <div class="btnM">Pomoč</div>
-            <div class="btnM">Kontakt</div>
+        	<div class="btnM"><a href="<%=request.getContextPath()%>/home">Projekti</a></div>
             
         </div>
         
@@ -844,7 +872,12 @@ google.setOnLoadCallback(drawVisualization);
 		  inputable = new google.visualization.DataTable();
 		  
 		  for(i = 0; i < data.getNumberOfColumns(); i++){
-			  inputable.addColumn("string", String(data.getColumnLabel(i)));
+			  if(i==0){
+			  	inputable.addColumn("string", String(data.getColumnLabel(i)));
+			  }
+			  else{
+			  	inputable.addColumn("string", '<input class="label" type="text" col="'+i+'" value="' + String(data.getColumnLabel(i))+ '"/>') ;
+			  }
 		  }
 		  
 		  inputable.addRows(data.getNumberOfRows());
@@ -853,8 +886,25 @@ google.setOnLoadCallback(drawVisualization);
 			  val = String(data.getValue(i,0));
 			  inputable.setCell(i,0, val);
 		  }
+		  
+		  /*for(j = col; j < data.getNumberOfColumns(); j++){
+				
+				val = data.getColumnLabel(j);
+				value = '<input class="label" type="text" col="'+j+'" value="' + val + '"/>' ;
+			  	inputable.setColumnLabel(j, value);
+			}*/
+			
+			var index;
 
 		  for(i = row; i < data.getNumberOfRows(); i++){
+			  
+			  for(k = row; k < tableData.getNumberOfRows(); k++){
+				  //alert(k + "" + tableData.getValue(k,0))
+				  if(tableData.getValue(k,0) == data.getValue(i,0)){
+					  index = k;
+					  break;
+				  }
+			  }
 			  
 				for(j = col; j < data.getNumberOfColumns(); j++){
 					
@@ -864,7 +914,7 @@ google.setOnLoadCallback(drawVisualization);
 					if (val == null || val == undefined){
 						val = "";
 					}
-					value = '<input class="tblInput" type="text" row="'+i+'" col="'+j+'" value="' + val + '"/>' ;
+					value = '<input class="tblInput" type="text" row="'+index+'" col="'+j+'" value="' + val + '"/>' ;
 				  	inputable.setCell(i,j, value);
 				}
 		  }
@@ -981,6 +1031,17 @@ google.setOnLoadCallback(drawVisualization);
     <div class="popup">
     	<div class="closePopup">&times;</div>
     	<div class="example-plot" id="utilityGraph"></div>  
+    	<div>
+    	<ul>
+    		
+    		<li><p>Minimalna vrednost:</p><input id="minVal" type="text" value=""/></li>
+    		
+    		<li><p>Maksimalna vrednost:</p><input id="maxVal" type="text" value=""/></li>
+    	
+    	</ul>
+
+    	
+    	</div>
     </div>
     
     
@@ -993,7 +1054,7 @@ google.setOnLoadCallback(drawVisualization);
     
     
     
-    <div id="bottomArea">
+    <div id="bottomArea" style="display:none;">
     	<div class="btmNav noteBtn"></div>
         <div class="btmNav helpBtn"></div>
         <div class="area">

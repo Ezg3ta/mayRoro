@@ -347,6 +347,29 @@ body{
 	background-color:rgba(256, 256, 256, 0.77);
 }
 
+.label{
+	border:none;
+	background-color:rgba(256, 256, 256, 0.33);
+	width:92%;
+	margin:auto;
+	outline:none;
+	display:block;
+	text-align:center;
+	border-radius:3px;
+	padding:2px;
+	min-width:80px;
+}
+.defBtn{
+	padding:5px;
+	border: 1px solid #aaa;
+	background: #eee;
+	cursor:pointer;
+	
+}
+.defBtn:hover{
+	background: #f4f4f4;
+	}
+	
 
 /*	utilityGraph	*/
 
@@ -367,7 +390,8 @@ body{
 	text-align:right;
 	padding:10px;
 	top:200px;
-	left:30%;
+	left:50%;
+	margin-left:-300px;
 	display:none;
 }
 .popup .closePopup, .popupWeight .closePopup{
@@ -382,9 +406,22 @@ body{
 .popupWeight div{
 	text-align:left;
 }
-.popupWeight ul{
+.popupWeight ul, .popup ul{
 	list-style-type: none;
+	margin-top:20px;
 }
 .popupWeight li{
 	padding:5px;
+	font-weight:bold;
+}
+.popup li{
+	padding:5px;
+	font-weight:bold;
+	display:block;
+	float:left;
+	width:40%;
+}
+li input{
+	padding:4px;
+	border:solid 1px #aaa;
 }

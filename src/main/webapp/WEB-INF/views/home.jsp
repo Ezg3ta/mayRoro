@@ -326,6 +326,7 @@ $(".tblInput").live("focusout", function(){
 $(".logout").live("click", function(){
 	$.get("logout");
 	$.get("https://accounts.google.com/Logout");
+	window.location.href = 'http://127.0.0.1:8080/mayRoro/';
 	return false;
 	
 });
@@ -359,9 +360,7 @@ $(".save").live("click", function(){
        
         <div class="menu">
         
-        	<div class="btnM">Projekti</div>
-            <div class="btnM">Pomoč</div>
-            <div class="btnM">Kontakt</div>
+        	<div class="btnM"><a href="<%=request.getContextPath()%>/home">Projekti</a></div>
             
         </div>
         
@@ -385,7 +384,7 @@ $(".save").live("click", function(){
     
     <form method="get" action="/mayRoro/util/new_spreadsheet"> 
 	    <input name="title" type="text"/>
-	    <input type="submit" title="ustvari"/>
+	    <input class="defBtn" type="submit" title="ustvari" name="ustvari" value="ustvari"/>
     </form>
     
     
