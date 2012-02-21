@@ -110,13 +110,15 @@ public class UtilController {
 		dtDrevo.removeEmptyRows();
 		
 		Tree drevo = new Tree(dtDrevo);
+		System.out.println(drevo);
 		drevo.cleanNames();
 		drevo.setMautFunction(dtFunkcije);
 		
+		
 		StringBuilder sb = new StringBuilder();
-		String result;
 		for (int i = 1; i < dtMaut.getCols().size(); i++){
 			drevo.setData(dtMaut, i);
+			System.out.println(drevo);
 			if (!drevo.isDataComplete()){
 				System.out.println("CHECK DATA!");
 				continue;

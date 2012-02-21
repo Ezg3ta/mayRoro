@@ -20,37 +20,55 @@ public class Tree {
 		TreeNode root, currentRoot = new TreeNode();
 		String child, parent;
 		double weight;
-		boolean found;
+		boolean found, firstNode = true;
+		int i = 0;
+		TableRow row;
 		
 		root = currentRoot;
-		for (TableRow row : drevo.getRows()){
-			if ("".equals(row.getCell(1).getValue()) || row.getCell(1).getValue() == null)
-				break;
+		
+		while(drevo.getRows().size() > 0){
+			row = drevo.getRow(i);
 			child = row.getCell(0).getValue();
 			parent = row.getCell(1).getValue();
-			weight = Double.parseDouble(row.getCell(2).getValue());
 			
-			found = false;
-			for (TreeNode node : root.getAllNodes()){
-				if (parent.equals(node.getName())){
-					node.addChild(child, weight);
-					found = true;
-					break;
-				}
-				else if (child.equals(node.getName())){
-					currentRoot = new TreeNode(parent);
-					node.setParent(currentRoot);
-					found = true;
-					break;
-				}
+			if ("".equals(parent) || parent == null){
+				drevo.getRows().remove(i);
+				continue;
 			}
-			if (!found){
+			
+			weight = Double.parseDouble(row.getCell(2).getValue().replace(',', '.'));
+			
+			if (firstNode){
 				currentRoot = new TreeNode(parent);
 				currentRoot.addChild(child, weight);
+				drevo.getRows().remove(i);
+				firstNode = false;
 			}
-			
+			else {
+				found = false;
+				for (TreeNode node : root.getAllNodes()){
+					if (parent.equals(node.getName())){
+						node.addChild(child, weight);
+						found = true;
+						break;
+					}
+					else if (child.equals(node.getName())){
+						currentRoot = new TreeNode(parent);
+						node.setParent(currentRoot);
+						found = true;
+						break;
+					}
+				}
+				if (found){
+					drevo.getRows().remove(i);
+				}
+				else {
+					i = ++i%drevo.getRows().size();
+				}
+			}
 			root = currentRoot;
 		}
+		
 		this.root = root;
 	}
 	
@@ -123,6 +141,7 @@ public class Tree {
 		List<TreeNode> nodes = getLeafNodes();
 		boolean dataComplete = true;
 		for (TreeNode node : nodes){
+			System.out.println(node.getName()+": "+node.getData());
 			if (node.getData() == -1){
 				dataComplete = false;
 				break;
