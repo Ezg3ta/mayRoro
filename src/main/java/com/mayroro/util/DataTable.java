@@ -38,6 +38,9 @@ public class DataTable {
 	public TableCell getCell(int row, int col){
 		return rows.get(row).getCell(col);
 	}
+	public TableRow getRow(int row){
+		return rows.get(row);
+	}
 	
 	public void removeEmptyRows(){
 		List<TableRow> removeRows = new ArrayList<TableRow>();
