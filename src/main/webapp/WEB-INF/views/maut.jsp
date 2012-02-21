@@ -409,7 +409,6 @@ function _getNodeChildrens(parent){
 	for(i = 0; i < data.getNumberOfRows(); i++){
 		if(String(data.getValue(i,1)).indexOf(parent) > 0){
 			_s = data.getValue(i,0);
-			_s = _s.replace("nodeId=", "nodeid=");
 			_s = _s.substring(_s.indexOf("value=")+7, _s.indexOf("nodeid=")-2).replace("\"","");
 			//alert(_s)
 			cls[cnt][0] = _s;
