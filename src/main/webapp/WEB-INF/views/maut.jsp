@@ -138,10 +138,11 @@ function initNodesIds(){
 				}
 			}
 		}
-		
-		
-		
+
 		nodesData[i] = new GraphData(nodesName[i], nodesIds[i], coords, min, max);
+		
+		//alert(nodesData[i].pointCoords)
+		
 	}
 	
 	nodesIdsSorted = nodesIds.sort();
@@ -189,6 +190,13 @@ function initUtilityGraph(name, pointCoords, min, max){
 		  shadow: false
 	  }
   });
+  
+  
+  //$.jqplot.postDrawSeriesHooks.push(updatedSeries);
+
+  function updatedSeries(sctx, options) {
+    console.log(plot.series[0].data); //data for the series is here
+  }
 
 }
 
@@ -231,11 +239,17 @@ function initUtilityGraph(name, pointCoords, min, max){
 	}
 	
 	$(".popup .closePopup").live("click", function(){
-		hidePopup();
-		nodesData[currentNodeIndex].pointCoords = plot.series[0].data;
+		//hidePopup();
+		//alert(nodesData[currentNodeIndex].pointCoords)
 		
-		name = nodesData[currentNodeIndex].name;
-		coords = nodesData[currentNodeIndex].pointCoords;
+		ndIndx = _getNodeIndex();
+		
+		nodesData[ndIndx].pointCoords = plot.series[0].data;
+		
+		
+		name = nodesData[ndIndx].name;
+		coords = nodesData[ndIndx].pointCoords;
+		
 		
 		for(j = 0; j < functionData.getNumberOfColumns(); j=j+2){
 			if(name == functionData.getColumnLabel(j)){
@@ -250,6 +264,7 @@ function initUtilityGraph(name, pointCoords, min, max){
 		
 		
 		plot.destroy();
+		hidePopup();
 	});
 	
 	
@@ -316,7 +331,7 @@ function _getCurrentNodeIndex(){
 
 /* triggeri */
 $(".addModelNode").live("click", function(){
-	data.addRow(['<input type="text" value="'+(newNodeId)+'" nodeid="'+(newNodeId)+'"/>', currentNode, "0"]);
+	data.addRow(['<input type="text" value="'+(newNodeId)+'" nodeid="'+(newNodeId)+'"/>', currentNode, 0]);
 	mautModel.draw(data, {allowHtml:true});
 	mautModel.setSelection();
 	hideToolbar();
@@ -329,21 +344,25 @@ $(".addModelNode").live("click", function(){
 	
 	nodesIds[nodesIds.length] = newNodeId;
 	
-	functionData.addColumn("string", ""+newNodeId);
-	functionData.addColumn("string", "");
+	functionData.addColumn("number", newNodeId);
+	functionData.addColumn("number", null);
 	
 	j = functionData.getNumberOfColumns() - 2;
 	
-	functionData.setCell(0, j, ""+min);
-	functionData.setCell(0, j+1, ""+max);
+	functionData.setCell(0, j, min);
+	functionData.setCell(0, j+1, max);
 
 	for(k = 0; k < 20; k++){
-		functionData.setCell(k + 1, j, String(parseInt(defaultCoords[k][0])));
-		functionData.setCell(k + 1, j + 1, String(parseFloat(defaultCoords[k][1])));
+		functionData.setCell(k + 1, j, parseInt(defaultCoords[k][0]));
+		functionData.setCell(k + 1, j + 1, parseFloat(defaultCoords[k][1]));
 	}	
 	
 	tableData.addRow();
 	tableData.setCell(tableData.getNumberOfRows() - 1, 0, ""+newNodeId);
+	
+	for(k = 1; k < tableData.getNumberOfColumns(); k++){
+		tableData.setCell(tableData.getNumberOfRows() - 1, k, 0);
+	}	
 	
 	newNodeId++;
   
@@ -533,7 +552,20 @@ $(".addAlternative").live("click", function(){
 	val = $("#alternativeName").attr("value");
 	if(val.length >= 2){
 		$("#alternativeName").attr("value","");
-		tableData.addColumn("string", val );
+		tableData.addColumn("number", val );
+		var j;
+		for(i=0;i < tableData.getNumberOfColumns();i++){
+			if(tableData.getColumnLabel(i) == val)
+				{
+					j = i;
+					//alert(val + " " + j)
+					break;
+				}
+		}
+		
+		for(i=0; i < tableData.getNumberOfRows();i++){
+			tableData.setValue(i, j, 0);
+		}
 		drawTable();
 	}
 });
@@ -542,9 +574,9 @@ $(".tblInput").live("focusout", function(){
 	
 	row = parseInt($(this).attr("row"));
 	col = parseInt($(this).attr("col"));
-	val = $(this).attr("value");
+	val = parseInt($(this).attr("value"));
 	
-	tableData.setCell(row, col, val);
+	tableData.setCell(row+1, col, val);
 	drawTable();
 });
 
@@ -786,9 +818,9 @@ google.setOnLoadCallback(drawVisualization);
 			node = parents[i];
 			
 			isLeaf = true;
-			for(j = 0; j < tblData.getNumberOfRows(); j++){
+			for(j = 0; j < leafsDat.getNumberOfRows(); j++){
 				//alert(tblData.getValue(j,0))
-				if(tblData.getValue(j, 0) == node){
+				if(leafsDat.getValue(j, 0) == node){
 					isLeaf = false;
 					break;
 				}
@@ -809,7 +841,18 @@ google.setOnLoadCallback(drawVisualization);
 		  
 		  var value;
 		  
-		  inputable = data.clone();
+		  inputable = new google.visualization.DataTable();
+		  
+		  for(i = 0; i < data.getNumberOfColumns(); i++){
+			  inputable.addColumn("string", String(data.getColumnLabel(i)));
+		  }
+		  
+		  inputable.addRows(data.getNumberOfRows());
+		  
+		  for(i = 0; i < data.getNumberOfRows(); i++){
+			  val = String(data.getValue(i,0));
+			  inputable.setCell(i,0, val);
+		  }
 
 		  for(i = row; i < data.getNumberOfRows(); i++){
 			  
@@ -873,6 +916,9 @@ google.setOnLoadCallback(drawVisualization);
 		
 		leafs = _getLeafs(data, nodesData);
 		parents = _getParents(data, nodesData);
+		
+		//alert(parents)
+		
 		leafsData =  _getLeafsData(tableData, parents);
 		
 		leafsDataInputable = _makeInputable(leafsData, 0, 1);

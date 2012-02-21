@@ -72,10 +72,10 @@ public class BatchCellUpdater {
 		batchRequest.setId(cellFeedUrl.toString());
 		for (CellAddress cellAddr : cellAddrs) {
 			CellEntry batchEntry = new CellEntry(cellEntries.get(cellAddr.idString));
-			if(rows.get(cellAddr.row-1).getCell(cellAddr.col-1).getF() == null)
-				batchEntry.changeInputValueLocal(rows.get(cellAddr.row-1).getCell(cellAddr.col-1).getValue().toString());
+			if (rows.get(cellAddr.row-1).getCell(cellAddr.col-1).getValue() == null)
+				batchEntry.changeInputValueLocal("");
 			else
-				batchEntry.changeInputValueLocal(rows.get(cellAddr.row-1).getCell(cellAddr.col-1).getF().toString());
+				batchEntry.changeInputValueLocal(rows.get(cellAddr.row-1).getCell(cellAddr.col-1).getValue().toString().replace('.', ','));
 			BatchUtils.setBatchId(batchEntry, cellAddr.idString);
 			BatchUtils.setBatchOperationType(batchEntry, BatchOperationType.UPDATE);
 			batchRequest.getEntries().add(batchEntry);

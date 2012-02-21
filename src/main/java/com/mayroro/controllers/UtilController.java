@@ -101,6 +101,8 @@ public class UtilController {
 	public @ResponseBody String result(@RequestParam("drevo") String drevoJson, @RequestParam("funkcije") String funkcijeJson, @RequestParam("maut") String mautJson) {
 		Gson gson = new Gson();
 		
+		System.out.println("Drevo: "+ drevoJson + "\nFunkcije: " + funkcijeJson + "\nMaut: " + mautJson);
+		
 		DataTable dtDrevo = gson.fromJson(drevoJson, com.mayroro.util.DataTable.class);
 		DataTable dtFunkcije = gson.fromJson(funkcijeJson, com.mayroro.util.DataTable.class);
 		DataTable dtMaut = gson.fromJson(mautJson, com.mayroro.util.DataTable.class);
